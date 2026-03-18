@@ -3,13 +3,41 @@
    Data in localStorage · Offline-ready PWA
    =================================================================== */
 
+const APP_VERSION = 'v1.1.0 (2026-03-18)';
+
 // ====== Pet Species Config ======
 const SPECIES = {
   cat:    { name: '貓咪', icon: '🐱', stages: ['🥚','🐱','😺','😸','🦁'], stageLv: [1,3,10,25,50] },
   dog:    { name: '狗狗', icon: '🐶', stages: ['🥚','🐶','🐕','🦮','🐺'], stageLv: [1,3,10,25,50] },
-  rabbit: { name: '兔兔', icon: '🐰', stages: ['🥚','🐰','🐇','🐾','🦄'], stageLv: [1,3,10,25,50] },
+  rabbit: { name: '兔兔', icon: '🐰', stages: ['🥚','miffy-head','miffy-body','miffy-arms','miffy-full'], stageLv: [1,3,10,25,50], css: true,
+    stageLabels: ['蛋蛋','頭','頭+身體','頭+身體+手','完整米菲'] },
   dragon: { name: '龍龍', icon: '🐲', stages: ['🥚','🐣','🐲','🐉','🔥'], stageLv: [1,3,10,25,50] },
 };
+
+// Miffy-style CSS rabbit HTML for each stage
+function renderMiffy(stage) {
+  const showBody = ['miffy-body','miffy-arms','miffy-full'].includes(stage);
+  const showArms = ['miffy-arms','miffy-full'].includes(stage);
+  const showLegs = stage === 'miffy-full';
+  return `
+    <div class="miffy ${stage}">
+      <div class="miffy-ears">
+        <div class="miffy-ear left"></div>
+        <div class="miffy-ear right"></div>
+      </div>
+      <div class="miffy-head">
+        <div class="miffy-eyes">
+          <div class="miffy-eye left"></div>
+          <div class="miffy-eye right"></div>
+        </div>
+        <div class="miffy-mouth"></div>
+      </div>
+      ${showBody ? '<div class="miffy-body-part"></div>' : ''}
+      ${showArms ? '<div class="miffy-arm left"></div><div class="miffy-arm right"></div>' : ''}
+      ${showLegs ? '<div class="miffy-leg left"></div><div class="miffy-leg right"></div>' : ''}
+    </div>
+  `;
+}
 
 const HABIT_EMOJIS = ['💪','📖','🦷','🧹','🏃','💤','🥗','🧘','✏️','🎹','🚿','🌅','💊','🚶','🧠','🎯','💧','🍎','📵','🙏','🍼','pacifier'];
 
@@ -84,7 +112,8 @@ function xpForNextLevel(level) {
 function xpProgress(xp, level) {
   const cur = XP_TABLE[level] || 0;
   const next = xpForNextLevel(level);
-  return Math.min(100, Math.round(((xp - cur) / (next - cur)) * 100));
+  if (next <= cur) return 0;
+  return Math.max(0, Math.min(100, Math.round(((xp - cur) / (next - cur)) * 100)));
 }
 
 // ====== Daily Decay ======
@@ -167,7 +196,15 @@ function renderPetPage() {
   const emoji = petStage(p.species, lv);
   const xpProg = xpProgress(p.xp, lv);
 
-  $('#pet-emoji').textContent = emoji;
+  const sp = SPECIES[p.species];
+  const petEl = $('#pet-emoji');
+  if (sp && sp.css && emoji.startsWith('miffy')) {
+    petEl.textContent = '';
+    petEl.innerHTML = renderMiffy(emoji);
+  } else {
+    petEl.innerHTML = '';
+    petEl.textContent = emoji;
+  }
   $('#pet-name-display').textContent = p.name;
   $('#pet-level-badge').textContent = `Lv.${lv}`;
 
@@ -637,9 +674,18 @@ function renderEvolutionTimeline(currentLevel) {
     const reached = currentLevel >= sp.stageLv[i];
     const isCurrent = reached && (i === sp.stages.length - 1 || currentLevel < sp.stageLv[i + 1]);
     stage.className = 'evo-stage' + (!reached ? ' locked' : '') + (isCurrent ? ' current' : '');
+
+    let emojiHtml;
+    if (sp.css && emoji.startsWith('miffy')) {
+      emojiHtml = `<div class="evo-emoji evo-miffy">${renderMiffy(emoji)}</div>`;
+    } else {
+      emojiHtml = `<div class="evo-emoji">${emoji}</div>`;
+    }
+    const label = sp.stageLabels ? sp.stageLabels[i] : '';
     stage.innerHTML = `
-      <div class="evo-emoji">${emoji}</div>
+      ${emojiHtml}
       <div class="evo-level">Lv.${sp.stageLv[i]}</div>
+      ${label ? `<div class="evo-label">${label}</div>` : ''}
     `;
     tl.appendChild(stage);
   });
@@ -651,6 +697,16 @@ function renderSettingsPage() {
   $('#edit-pet-name').value = state.pet.name;
   const sp = SPECIES[state.pet.species];
   $('#edit-pet-species').textContent = sp ? sp.name + ' ' + sp.icon : '';
+  // Version info
+  const verEl = $('#app-version');
+  if (verEl) verEl.textContent = APP_VERSION;
+  const swEl = $('#sw-version');
+  if (swEl && navigator.serviceWorker && navigator.serviceWorker.controller) {
+    // Fetch SW cache name
+    caches.keys().then(keys => { swEl.textContent = keys.filter(k => k.startsWith('habit-pet')).join(', ') || 'N/A'; });
+  } else if (swEl) {
+    swEl.textContent = 'N/A';
+  }
 }
 
 // ====== Modal / Confirm ======

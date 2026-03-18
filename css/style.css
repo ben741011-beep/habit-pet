@@ -593,3 +593,172 @@ html, body {
   font-weight: 600; cursor: pointer;
 }
 .qr-nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ====== Miffy-style Rabbit ====== */
+.miffy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  animation: miffyAppear 0.5s ease;
+}
+@keyframes miffyAppear {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Ears */
+.miffy-ears {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: -6px;
+  z-index: 1;
+}
+.miffy-ear {
+  width: 14px;
+  height: 38px;
+  background: #fff;
+  border: 3px solid #2D3436;
+  border-radius: 50% 50% 0 0;
+  position: relative;
+}
+.miffy-ear::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 50%; transform: translateX(-50%);
+  width: 6px;
+  height: 24px;
+  background: #FFB8C6;
+  border-radius: 50%;
+}
+
+/* Head */
+.miffy-head {
+  width: 64px;
+  height: 58px;
+  background: #fff;
+  border: 3px solid #2D3436;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+/* Eyes */
+.miffy-eyes {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 18px;
+}
+.miffy-eye {
+  width: 6px;
+  height: 6px;
+  background: #2D3436;
+  border-radius: 50%;
+}
+
+/* X-shaped mouth */
+.miffy-mouth {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 8px;
+}
+.miffy-mouth::before,
+.miffy-mouth::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  background: #2D3436;
+  top: 50%;
+  left: 50%;
+  border-radius: 1px;
+}
+.miffy-mouth::before {
+  transform: translate(-50%, -50%) rotate(30deg);
+}
+.miffy-mouth::after {
+  transform: translate(-50%, -50%) rotate(-30deg);
+}
+
+/* Body */
+.miffy-body-part {
+  width: 50px;
+  height: 44px;
+  background: #FF6B6B;
+  border: 3px solid #2D3436;
+  border-radius: 8px 8px 16px 16px;
+  margin-top: -4px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Arms */
+.miffy-arm {
+  position: absolute;
+  width: 14px;
+  height: 30px;
+  background: #fff;
+  border: 3px solid #2D3436;
+  border-radius: 20px;
+  z-index: 0;
+}
+.miffy-arm.left {
+  top: calc(50% + 20px);
+  left: -6px;
+  transform: rotate(15deg);
+}
+.miffy-arm.right {
+  top: calc(50% + 20px);
+  right: -6px;
+  transform: rotate(-15deg);
+}
+
+/* Legs */
+.miffy-leg {
+  position: absolute;
+  width: 16px;
+  height: 22px;
+  background: #fff;
+  border: 3px solid #2D3436;
+  border-radius: 20px;
+  bottom: -18px;
+  z-index: 0;
+}
+.miffy-leg.left { left: 10px; }
+.miffy-leg.right { right: 10px; }
+
+/* Stage: head only — no body, just float */
+.miffy.miffy-head .miffy-body-part,
+.miffy.miffy-head .miffy-arm,
+.miffy.miffy-head .miffy-leg { display: none; }
+
+/* Evo timeline mini miffy */
+.evo-miffy .miffy {
+  width: 36px;
+  transform: scale(0.45);
+  transform-origin: top center;
+  margin-bottom: -30px;
+}
+.evo-miffy {
+  min-height: 50px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.evo-label {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Pet scene adjustments for Miffy */
+#pet-emoji .miffy {
+  width: 80px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+}
