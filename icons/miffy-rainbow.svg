@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 310">
+  <defs>
+    <radialGradient id="bL" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FF9AAA" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FF9AAA" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rainbow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="17%" stop-color="#FF9F43"/>
+      <stop offset="33%" stop-color="#FECA57"/>
+      <stop offset="50%" stop-color="#48DBFB"/>
+      <stop offset="67%" stop-color="#0ABDE3"/>
+      <stop offset="83%" stop-color="#A29BFE"/>
+      <stop offset="100%" stop-color="#FD79A8"/>
+    </linearGradient>
+    <radialGradient id="sparkle" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FFF" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Glow behind -->
+  <circle cx="100" cy="200" r="120" fill="url(#sparkle)" opacity="0.3"/>
+
+  <!-- Left Ear -->
+  <ellipse cx="72" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-6,72,32)"/>
+  <ellipse cx="72" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(-6,72,32)" opacity="0.7"/>
+  <!-- Right Ear -->
+  <ellipse cx="128" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(6,128,32)"/>
+  <ellipse cx="128" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(6,128,32)" opacity="0.7"/>
+  <!-- Tiny tiara ✨ -->
+  <g transform="translate(100,48)">
+    <polygon points="0,-12 4,-5 8,-10 12,-3 8,2 4,2 0,2 -4,2 -8,2 -12,-3 -8,-10 -4,-5" fill="#FFD700" stroke="#DAA520" stroke-width="1" opacity="0.8"/>
+    <circle cx="0" cy="-10" r="2" fill="#FF6B9D"/>
+  </g>
+  <!-- Head -->
+  <circle cx="100" cy="105" r="62" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <!-- L Eye -->
+  <ellipse cx="80" cy="96" rx="4" ry="5" fill="#2D3436"/>
+  <circle cx="78.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
+  <!-- R Eye -->
+  <ellipse cx="120" cy="96" rx="4" ry="5" fill="#2D3436"/>
+  <circle cx="118.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
+  <!-- Blush -->
+  <circle cx="60" cy="114" r="11" fill="url(#bL)"/>
+  <circle cx="140" cy="114" r="11" fill="url(#bL)"/>
+  <!-- Nose -->
+  <circle cx="100" cy="112" r="2" fill="#C9888A"/>
+  <!-- X Mouth -->
+  <line x1="94" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="106" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="94" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="106" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <!-- Rainbow Dress -->
+  <path d="M62,162 C58,162 52,185 50,210 C48,240 52,255 60,265 C70,278 85,284 100,284 C115,284 130,278 140,265 C148,255 152,240 150,210 C148,185 142,162 138,162 Z" fill="url(#rainbow)" stroke="#555" stroke-width="2.5"/>
+  <path d="M75,170 C72,180 70,200 72,220 C74,230 80,240 90,245" fill="none" stroke="#FFF" stroke-width="3" opacity="0.2" stroke-linecap="round"/>
+  <!-- Sparkle stars ✨ -->
+  <g opacity="0.6">
+    <polygon points="165,120 167,126 173,126 168,130 170,136 165,132 160,136 162,130 157,126 163,126" fill="#FFD700"/>
+    <polygon points="35,150 36.5,154 41,154 37.5,156.5 39,161 35,158 31,161 32.5,156.5 29,154 33.5,154" fill="#FF6B9D" transform="scale(0.8) translate(8,20)"/>
+    <polygon points="170,180 171.5,184 176,184 172.5,186.5 174,191 170,188 166,191 167.5,186.5 164,184 168.5,184" fill="#48DBFB" transform="scale(0.7) translate(50,35)"/>
+  </g>
+  <!-- Left Arm -->
+  <ellipse cx="46" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-15,46,200)"/>
+  <!-- Right Arm -->
+  <ellipse cx="154" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(15,154,200)"/>
+  <!-- Left Foot -->
+  <ellipse cx="78" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <!-- Right Foot -->
+  <ellipse cx="122" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+</svg>

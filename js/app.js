@@ -3,69 +3,32 @@
    Data in localStorage · Offline-ready PWA
    =================================================================== */
 
-const APP_VERSION = 'v1.3.0 (2026-03-19)';
+const APP_VERSION = 'v1.4.0 (2026-03-19)';
 
 // ====== Pet Species Config ======
 const SPECIES = {
-  rabbit: { name: '兔兔', icon: '🐰', stages: ['miffy-head','miffy-orange','miffy-blue','miffy-yellow','miffy-pink','miffy-green','miffy-purple','miffy-rainbow'], stageLv: [1,2,3,4,5,6,7,8], css: true,
-    stageLabels: ['小臉','橘衣米菲','藍衣米菲','黃衣米菲','粉衣米菲','綠衣米菲','紫衣米菲','彩虹米菲'] },
+  rabbit: { name: '兔兔', icon: '🐰',
+    stages: ['miffy-head','miffy-orange','miffy-blue','miffy-yellow','miffy-pink','miffy-green','miffy-purple','miffy-rainbow'],
+    stageLv: [1,2,3,4,5,6,7,8],
+    stageLabels: ['小臉','橘衣米菲','藍衣米菲','黃衣米菲','粉衣米菲','綠衣米菲','紫衣米菲','彩虹米菲'],
+    images: {
+      'miffy-head':    'icons/miffy-head.svg',
+      'miffy-orange':  'icons/miffy-orange.svg',
+      'miffy-blue':    'icons/miffy-blue.svg',
+      'miffy-yellow':  'icons/miffy-yellow.svg',
+      'miffy-pink':    'icons/miffy-pink.svg',
+      'miffy-green':   'icons/miffy-green.svg',
+      'miffy-purple':  'icons/miffy-purple.svg',
+      'miffy-rainbow': 'icons/miffy-rainbow.svg',
+    }
+  },
 };
 
-// Miffy-style CSS rabbit HTML for each stage
+// Render rabbit image for a stage
 function renderMiffy(stage) {
-  const hasBody = stage !== 'miffy-head';
-  const hasArms = hasBody;
-  const hasLegs = hasBody;
-
-  // Different dress colors per stage
-  let dressColor = '#FF6B6B';
-  let accessory = '';
-  let dressPattern = '';
-  if (stage === 'miffy-orange') {
-    dressColor = '#FF7F2A';
-  } else if (stage === 'miffy-blue') {
-    dressColor = '#4A90D9';
-    accessory = '<div class="miffy-balloon"><div class="miffy-balloon-ball"><div class="miffy-balloon-shine"></div></div><div class="miffy-balloon-string"></div></div>';
-  } else if (stage === 'miffy-yellow') {
-    dressColor = '#FFD93D';
-    dressPattern = '<span class="miffy-dress-icon">🌸</span>';
-    accessory = '<span class="miffy-accessory miffy-acc-crown">👑</span>';
-  } else if (stage === 'miffy-pink') {
-    dressColor = '#FF8FAB';
-    dressPattern = '<span class="miffy-dress-icon miffy-spin">🎀</span>';
-  } else if (stage === 'miffy-green') {
-    dressColor = '#66BB6A';
-    dressPattern = '<span class="miffy-dress-icon miffy-spin">🌼</span>';
-  } else if (stage === 'miffy-purple') {
-    dressColor = '#AB47BC';
-    dressPattern = '<span class="miffy-dress-icon miffy-spin">🦋</span>';
-  } else if (stage === 'miffy-rainbow') {
-    dressColor = '#FF6B6B';
-    dressPattern = '<div class="miffy-dress-rainbow"></div>';
-  }
-
-  return `
-    <div class="miffy ${stage}" style="--dress-color:${dressColor}">
-      <div class="miffy-ears">
-        <div class="miffy-ear left"></div>
-        <div class="miffy-ear right"></div>
-      </div>
-      <div class="miffy-face">
-        <div class="miffy-eyes">
-          <div class="miffy-eye left"><div class="miffy-eye-shine"></div></div>
-          <div class="miffy-eye right"><div class="miffy-eye-shine"></div></div>
-        </div>
-        <div class="miffy-blush left"></div>
-        <div class="miffy-blush right"></div>
-        <div class="miffy-nose"></div>
-        <div class="miffy-mouth"></div>
-      </div>
-      ${hasBody ? `<div class="miffy-body-part">${dressPattern}</div>` : ''}
-      ${hasArms ? '<div class="miffy-arm left"></div><div class="miffy-arm right"></div>' : ''}
-      ${hasLegs ? '<div class="miffy-leg left"></div><div class="miffy-leg right"></div>' : ''}
-      ${accessory}
-    </div>
-  `;
+  const sp = SPECIES.rabbit;
+  const src = (sp.images && sp.images[stage]) || 'icons/miffy-head.png';
+  return `<img class="miffy-img ${stage}" src="${src}" alt="${stage}" draggable="false">`;
 }
 
 const HABIT_EMOJIS = ['💪','📖','🦷','🧹','🏃','💤','🥗','🧘','✏️','🎹','🚿','🌅','💊','🚶','🧠','🎯','💧','🍎','📵','🙏','🍼','pacifier'];
@@ -271,13 +234,8 @@ function renderPetPage() {
 
   const sp = SPECIES[p.species];
   const petEl = $('#pet-emoji');
-  if (sp && sp.css && emoji.startsWith('miffy')) {
-    petEl.textContent = '';
-    petEl.innerHTML = renderMiffy(emoji);
-  } else {
-    petEl.innerHTML = '';
-    petEl.textContent = emoji;
-  }
+  petEl.textContent = '';
+  petEl.innerHTML = renderMiffy(emoji);
   $('#pet-name-display').textContent = p.name;
   $('#pet-level-badge').textContent = `Lv.${lv}`;
 

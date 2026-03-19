@@ -1,11 +1,19 @@
-const CACHE_NAME = 'habit-pet-v12';
+const CACHE_NAME = 'habit-pet-v13';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
   './manifest.json',
-  './icons/pacifier.svg'
+  './icons/pacifier.svg',
+  './icons/miffy-head.svg',
+  './icons/miffy-orange.svg',
+  './icons/miffy-blue.svg',
+  './icons/miffy-yellow.svg',
+  './icons/miffy-pink.svg',
+  './icons/miffy-green.svg',
+  './icons/miffy-purple.svg',
+  './icons/miffy-rainbow.svg'
 ];
 
 self.addEventListener('install', e => {

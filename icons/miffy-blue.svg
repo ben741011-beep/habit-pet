@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 310">
+  <defs>
+    <radialGradient id="bL" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FF9AAA" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FF9AAA" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="dress" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5BA3E6"/>
+      <stop offset="100%" stop-color="#4A90D9"/>
+    </linearGradient>
+    <radialGradient id="balloon" cx="0.35" cy="0.3" r="0.6">
+      <stop offset="0%" stop-color="#FF8A8A"/>
+      <stop offset="100%" stop-color="#E84040"/>
+    </radialGradient>
+  </defs>
+  <!-- Left Ear -->
+  <ellipse cx="72" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-6,72,32)"/>
+  <ellipse cx="72" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(-6,72,32)" opacity="0.7"/>
+  <!-- Right Ear -->
+  <ellipse cx="128" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(6,128,32)"/>
+  <ellipse cx="128" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(6,128,32)" opacity="0.7"/>
+  <!-- Head -->
+  <circle cx="100" cy="105" r="62" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <!-- L Eye -->
+  <ellipse cx="80" cy="96" rx="4" ry="5" fill="#2D3436"/>
+  <circle cx="78.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
+  <!-- R Eye -->
+  <ellipse cx="120" cy="96" rx="4" ry="5" fill="#2D3436"/>
+  <circle cx="118.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
+  <!-- Blush -->
+  <circle cx="60" cy="114" r="11" fill="url(#bL)"/>
+  <circle cx="140" cy="114" r="11" fill="url(#bL)"/>
+  <!-- Nose -->
+  <circle cx="100" cy="112" r="2" fill="#C9888A"/>
+  <!-- X Mouth -->
+  <line x1="94" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="106" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="94" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <line x1="106" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <!-- Dress -->
+  <path d="M62,162 C58,162 52,185 50,210 C48,240 52,255 60,265 C70,278 85,284 100,284 C115,284 130,278 140,265 C148,255 152,240 150,210 C148,185 142,162 138,162 Z" fill="url(#dress)" stroke="#555" stroke-width="2.5"/>
+  <path d="M75,170 C72,180 70,200 72,220 C74,230 80,240 90,245" fill="none" stroke="#FFF" stroke-width="3" opacity="0.15" stroke-linecap="round"/>
+  <!-- Left Arm -->
+  <ellipse cx="46" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-15,46,200)"/>
+  <!-- Right Arm (holding balloon string) -->
+  <ellipse cx="154" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(15,154,200)"/>
+  <!-- Left Foot -->
+  <ellipse cx="78" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <!-- Right Foot -->
+  <ellipse cx="122" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <!-- Balloon String -->
+  <path d="M160,195 C165,170 170,130 168,100 C167,85 165,75 163,68" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Balloon -->
+  <ellipse cx="163" cy="48" rx="22" ry="26" fill="url(#balloon)" stroke="#555" stroke-width="2"/>
+  <ellipse cx="156" cy="38" rx="6" ry="5" fill="#FFF" opacity="0.35" transform="rotate(-20,156,38)"/>
+  <!-- Balloon knot -->
+  <polygon points="163,74 160,78 166,78" fill="#E84040" stroke="#555" stroke-width="1"/>
+</svg>
