@@ -1,0 +1,983 @@
+/* ===== Reset & Variables ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #6C5CE7;
+  --primary-light: #A29BFE;
+  --primary-dark: #4834D4;
+  --accent: #FD79A8;
+  --success: #00B894;
+  --warning: #FDCB6E;
+  --danger: #E17055;
+  --bg: #F8F9FE;
+  --card: #FFFFFF;
+  --text: #2D3436;
+  --text-light: #949CA6;
+  --shadow: 0 4px 15px rgba(108,92,231,0.10);
+  --shadow-lg: 0 8px 30px rgba(108,92,231,0.15);
+  --radius: 18px;
+  --radius-sm: 12px;
+  --nav-h: 62px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html, body {
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%; overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* ===== Bottom Nav ===== */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: #fff;
+  display: flex;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  background: none; border: none; color: #bbb;
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: color .2s;
+}
+.nav-btn .nav-icon { font-size: 22px; transition: transform .2s; }
+.nav-btn.active { color: var(--primary); }
+.nav-btn.active .nav-icon { transform: scale(1.2); }
+
+/* ===== Main Container ===== */
+#app-main {
+  position: fixed; top: 0; bottom: var(--nav-h);
+  left: 0; right: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.page { display: none; padding: 0 16px 24px; }
+.page.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ===== Pet Scene ===== */
+#pet-scene {
+  position: relative;
+  height: 260px;
+  border-radius: 0 0 32px 32px;
+  overflow: hidden;
+  margin: 0 -16px;
+  display: flex; align-items: center; justify-content: center;
+}
+#pet-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #A29BFE 0%, #DFE6E9 80%, #81C784 90%, #66BB6A 100%);
+  transition: background 1s;
+}
+#pet-ground {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+  background: linear-gradient(180deg, #81C784, #66BB6A);
+  border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+}
+#pet-container {
+  position: relative; z-index: 2;
+  animation: petBounce 2s ease-in-out infinite;
+}
+#pet-emoji {
+  font-size: 90px;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+  transition: font-size .3s;
+}
+#pet-status-icon {
+  position: absolute; top: -10px; right: -20px;
+  font-size: 28px;
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+#pet-status-icon.hidden { display: none; }
+
+@keyframes petBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes statusPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+#pet-name-display {
+  position: absolute; bottom: 50px; z-index: 3;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 16px; border-radius: 20px;
+  font-weight: 800; font-size: 15px;
+  color: var(--primary-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+#pet-level-badge {
+  position: absolute; top: 16px; right: 24px; z-index: 3;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff; padding: 6px 14px; border-radius: 20px;
+  font-weight: 800; font-size: 14px;
+  box-shadow: 0 3px 10px rgba(108,92,231,0.3);
+}
+
+/* Pet feed animation */
+.pet-feeding #pet-emoji { animation: petFeed .6s ease; }
+@keyframes petFeed {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25) rotate(-5deg); }
+  60% { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1); }
+}
+
+/* Pet hungry animation */
+.pet-hungry #pet-container { animation: petSad 3s ease-in-out infinite; }
+@keyframes petSad {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-4px) rotate(-3deg); }
+  75% { transform: translateY(-4px) rotate(3deg); }
+}
+
+/* ===== Stats Bars ===== */
+#pet-stats {
+  background: var(--card);
+  margin: -20px 0 0;
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  box-shadow: var(--shadow);
+  position: relative; z-index: 5;
+}
+.stat-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.stat-row:last-child { margin-bottom: 0; }
+.stat-label { font-size: 13px; font-weight: 600; width: 80px; flex-shrink: 0; }
+.stat-bar {
+  flex: 1; height: 14px;
+  background: #F0F0F5; border-radius: 7px;
+  overflow: hidden;
+}
+.stat-fill {
+  height: 100%; border-radius: 7px;
+  transition: width .6s cubic-bezier(.25,.8,.25,1);
+}
+.stat-fill.fullness { background: linear-gradient(90deg, #FDCB6E, #F39C12); }
+.stat-fill.mood { background: linear-gradient(90deg, #FD79A8, #E84393); }
+.stat-fill.xp { background: linear-gradient(90deg, #6C5CE7, #A29BFE); }
+.stat-val { font-size: 13px; font-weight: 800; width: 32px; text-align: right; color: var(--text-light); }
+
+/* ===== Today's Habits on Pet Page ===== */
+#today-habits-section {
+  margin-top: 16px;
+}
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 16px; font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.section-header span:last-child { color: var(--primary); font-size: 14px; }
+
+.habit-checklist { display: flex; flex-direction: column; gap: 8px; }
+
+.habit-check-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: var(--shadow);
+  transition: transform .15s, opacity .3s;
+  cursor: pointer;
+}
+.habit-check-item:active { transform: scale(0.98); }
+.habit-check-item.done { opacity: 0.5; }
+
+.habit-checkbox {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 3px solid #E0E0E0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  transition: all .3s;
+}
+.habit-check-item.done .habit-checkbox {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.habit-check-emoji { font-size: 28px; flex-shrink: 0; }
+.habit-check-info { flex: 1; }
+.habit-check-name { font-size: 15px; font-weight: 700; }
+.habit-check-item.done .habit-check-name { text-decoration: line-through; color: var(--text-light); }
+.habit-check-xp { font-size: 12px; color: var(--primary); font-weight: 700; }
+
+.hint-text {
+  text-align: center; color: var(--text-light);
+  font-size: 14px; padding: 30px 0;
+}
+.hint-text.hidden { display: none; }
+
+/* ===== Habits Management Page ===== */
+.page-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 4px 12px;
+}
+.page-header h2 { font-size: 24px; font-weight: 800; }
+.btn-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; border: none;
+  font-size: 22px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 3px 10px rgba(108,92,231,0.3);
+}
+
+.card-list { display: flex; flex-direction: column; gap: 10px; }
+
+.habit-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 12px;
+}
+.habit-card-emoji { font-size: 36px; flex-shrink: 0; }
+.habit-card-info { flex: 1; }
+.habit-card-name { font-size: 16px; font-weight: 700; }
+.habit-card-meta { font-size: 13px; color: var(--text-light); margin-top: 2px; }
+.habit-card-actions { display: flex; gap: 6px; }
+.habit-card-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: none; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.habit-card-btn.edit { background: #EDE7F6; color: var(--primary); }
+.habit-card-btn.delete { background: #FFEBEE; color: var(--danger); }
+
+/* ===== Stats Page ===== */
+.stats-cards {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 4px;
+}
+.stats-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.stats-num { font-size: 32px; font-weight: 800; color: var(--primary); }
+.stats-desc { font-size: 13px; color: var(--text-light); margin-top: 4px; font-weight: 600; }
+
+.week-calendar {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  box-shadow: var(--shadow);
+}
+.week-day {
+  text-align: center; padding: 8px 0;
+  border-radius: var(--radius-sm);
+}
+.week-day-label { font-size: 11px; color: var(--text-light); font-weight: 600; }
+.week-day-num { font-size: 16px; font-weight: 800; margin-top: 4px; }
+.week-day.completed { background: #E8F8F5; }
+.week-day.completed .week-day-num { color: var(--success); }
+.week-day.today { border: 2px solid var(--primary); }
+.week-day.missed .week-day-num { color: var(--danger); }
+
+.evolution-timeline {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+}
+.evo-stage {
+  display: flex; flex-direction: column;
+  align-items: center; min-width: 60px;
+}
+.evo-emoji { font-size: 36px; }
+.evo-level { font-size: 11px; color: var(--text-light); font-weight: 600; margin-top: 4px; }
+.evo-stage.locked .evo-emoji { filter: grayscale(1) opacity(0.3); }
+.evo-arrow { font-size: 20px; color: #ddd; margin: 0 2px; }
+.evo-stage.current .evo-emoji { animation: currentGlow 1.5s ease-in-out infinite; }
+@keyframes currentGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(108,92,231,0.3)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 12px rgba(108,92,231,0.6)); transform: scale(1.1); }
+}
+
+/* ===== Settings ===== */
+.settings-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.settings-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.setting-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.setting-row:last-of-type { border-bottom: none; }
+.setting-input {
+  border: 2px solid #e0e0e0; border-radius: 8px;
+  padding: 6px 12px; font-size: 14px;
+  width: 140px; text-align: right; outline: none;
+}
+.setting-input:focus { border-color: var(--primary); }
+.btn-row { display: flex; gap: 10px; }
+.btn-sm { padding: 8px 16px !important; font-size: 13px !important; }
+.danger-zone { border: 2px solid #FFCCBC; }
+.btn-danger {
+  background: var(--danger); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  padding: 10px 20px; font-size: 14px; font-weight: 600;
+  cursor: pointer; width: 100%;
+}
+.about-text { font-size: 13px; color: var(--text-light); line-height: 1.7; }
+
+/* ===== Overlay & Modal ===== */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.overlay.hidden { display: none; }
+
+.onboard-card, .modal-card, .confirm-card {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%; max-width: 400px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  animation: popIn .3s ease;
+}
+@keyframes popIn { from { transform: scale(0.85); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.onboard-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+.onboard-desc { text-align: center; color: var(--text-light); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+
+.species-picker {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-top: 8px;
+}
+.species-option {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px;
+  padding: 12px 8px;
+  border: 3px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  transition: all .2s;
+}
+.species-option.selected { border-color: var(--primary); background: #F3F0FF; transform: scale(1.05); }
+.species-option-emoji { font-size: 36px; }
+.species-option-name { font-size: 12px; font-weight: 700; color: var(--text-light); }
+
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+  font-size: 18px; font-weight: 800;
+}
+.modal-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; }
+
+.confirm-card { max-width: 320px; text-align: center; }
+.confirm-card p { font-size: 15px; margin-bottom: 20px; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 12px; }
+.confirm-actions button { flex: 1; }
+
+/* ===== Form ===== */
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 14px; font-weight: 700; color: var(--text-light); margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%; padding: 12px 14px;
+  border: 2px solid #E0E0E0; border-radius: var(--radius-sm);
+  font-size: 15px; outline: none;
+  transition: border-color .2s;
+}
+.form-group input:focus { border-color: var(--primary); }
+
+.emoji-picker {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+}
+.emoji-option {
+  width: 44px; height: 44px; font-size: 24px;
+  border: 2px solid #eee; border-radius: 12px;
+  background: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .2s, transform .15s;
+}
+.emoji-option.selected { border-color: var(--primary); transform: scale(1.1); background: #F3F0FF; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff; border: none;
+  padding: 14px 24px; border-radius: var(--radius-sm);
+  font-size: 16px; font-weight: 800;
+  cursor: pointer; width: 100%;
+  box-shadow: 0 4px 12px rgba(108,92,231,0.3);
+  transition: opacity .15s;
+}
+.btn-primary:active { opacity: 0.8; }
+.btn-outline {
+  background: #fff; color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 700;
+  cursor: pointer; flex: 1;
+  transition: background .15s;
+}
+.btn-outline:active { background: #F3F0FF; }
+
+/* ===== Feed Animation ===== */
+.feed-anim {
+  position: fixed; inset: 0; z-index: 250;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.feed-anim.hidden { display: none; }
+.feed-text {
+  font-size: 28px; font-weight: 800;
+  color: var(--primary);
+  text-shadow: 0 2px 8px rgba(108,92,231,0.3);
+  animation: feedFloat 1.2s ease-out forwards;
+}
+@keyframes feedFloat {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  30% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-80px) scale(1); opacity: 0; }
+}
+
+.feed-particles {
+  position: absolute;
+  width: 200px; height: 200px;
+}
+.feed-particle {
+  position: absolute;
+  font-size: 24px;
+  animation: particleFly 1s ease-out forwards;
+}
+@keyframes particleFly {
+  0% { transform: translate(0, 0) scale(0); opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 480px) {
+  .overlay { align-items: center; }
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 0; background: transparent; }
+
+/* ===== 7-Day Plan ===== */
+.plan-section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: var(--shadow);
+}
+.plan-section.hidden { display: none; }
+
+.plan-days {
+  display: flex; justify-content: space-between;
+  gap: 4px; margin-top: 10px;
+}
+.plan-day {
+  flex: 1; text-align: center;
+  padding: 8px 0;
+  border-radius: 12px;
+  background: #F0F0F5;
+  transition: all .3s;
+  position: relative;
+}
+.plan-day-num {
+  font-size: 11px; font-weight: 600;
+  color: var(--text-light);
+}
+.plan-day-icon {
+  font-size: 22px; margin-top: 2px;
+  min-height: 28px;
+}
+.plan-day.completed {
+  background: linear-gradient(135deg, #E8F8F5, #D5F5E3);
+}
+.plan-day.completed .plan-day-icon::after { content: '✅'; }
+.plan-day.today {
+  border: 2px solid var(--primary);
+  background: #F3F0FF;
+}
+.plan-day.today .plan-day-num { color: var(--primary); font-weight: 800; }
+.plan-day.missed {
+  background: #FFF0F0;
+}
+.plan-day.missed .plan-day-icon::after { content: '❌'; }
+
+.plan-reward {
+  text-align: center;
+  padding: 16px; margin-top: 12px;
+  background: linear-gradient(135deg, #FFF9C4, #FFE082);
+  border-radius: 16px;
+  animation: popIn .5s ease;
+}
+.plan-reward.hidden { display: none; }
+.plan-reward-emoji { font-size: 48px; }
+.plan-reward-text {
+  font-size: 16px; font-weight: 800;
+  color: #F57F17; margin-top: 4px;
+}
+
+/* ===== QR Code ===== */
+.qr-card {
+  background: #fff;
+  border-radius: 24px;
+  width: 100%; max-width: 360px;
+  padding: 24px;
+  box-shadow: var(--shadow-lg);
+  animation: popIn .3s ease;
+}
+.qr-card .modal-header { margin-bottom: 12px; }
+#qr-canvas-wrap {
+  display: flex; justify-content: center;
+  margin: 16px 0;
+}
+#qr-canvas-wrap canvas, #qr-canvas-wrap img {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.qr-hint {
+  text-align: center; font-size: 13px;
+  color: var(--text-light); line-height: 1.6;
+  margin-top: 8px;
+}
+.qr-video {
+  width: 100%; border-radius: 12px;
+  margin: 12px 0;
+}
+.qr-video.hidden { display: none; }
+.qr-pages {
+  display: flex; justify-content: center;
+  gap: 8px; margin-top: 12px;
+}
+.qr-page-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: background .2s;
+}
+.qr-page-dot.active { background: var(--primary); }
+.qr-nav-row {
+  display: flex; justify-content: center;
+  gap: 12px; margin-top: 12px;
+}
+.qr-nav-btn {
+  background: var(--primary); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 8px 20px; font-size: 14px;
+  font-weight: 600; cursor: pointer;
+}
+.qr-nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+/* ====== Bunny Character (Round & Cute) ====== */
+.miffy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 110px;
+  animation: miffyAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes miffyAppear {
+  from { transform: scale(0.3) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Ears — long soft ovals, slightly tilted outward */
+.miffy-ears {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: -10px;
+  z-index: 1;
+}
+.miffy-ear {
+  width: 20px;
+  height: 56px;
+  background: #fff;
+  border: 2.5px solid #3a3a3a;
+  border-radius: 50%;
+  position: relative;
+}
+.miffy-ear.left { transform: rotate(-6deg); }
+.miffy-ear.right { transform: rotate(6deg); }
+.miffy-ear::after {
+  content: '';
+  position: absolute;
+  top: 12px; left: 50%; transform: translateX(-50%);
+  width: 8px;
+  height: 32px;
+  background: linear-gradient(180deg, #FFD5DD 0%, #FFBCC8 100%);
+  border-radius: 50%;
+  opacity: 0.85;
+}
+
+/* Face — large round circle, the main feature */
+.miffy-face {
+  width: 82px;
+  height: 78px;
+  background: #fff;
+  border: 2.5px solid #3a3a3a;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Eyes — small round dots, widely spaced */
+.miffy-eyes {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  padding-top: 26px;
+}
+.miffy-eye {
+  width: 6px;
+  height: 7px;
+  background: #2D3436;
+  border-radius: 50%;
+  position: relative;
+}
+.miffy-eye-shine {
+  position: absolute;
+  top: 0.5px;
+  right: -0.5px;
+  width: 2.5px;
+  height: 2.5px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+/* Blush cheeks — soft pink ovals */
+.miffy-blush {
+  position: absolute;
+  width: 16px;
+  height: 11px;
+  background: radial-gradient(ellipse, rgba(255,170,170,0.55) 0%, transparent 70%);
+  border-radius: 50%;
+  top: 40px;
+}
+.miffy-blush.left { left: 8px; }
+.miffy-blush.right { right: 8px; }
+
+/* Nose — tiny soft dot */
+.miffy-nose {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 2.5px;
+  background: #dfa0a0;
+  border-radius: 50%;
+}
+
+/* X-shaped mouth — the signature look */
+.miffy-mouth {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 10px;
+}
+.miffy-mouth::before,
+.miffy-mouth::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 2px;
+  background: #3a3a3a;
+  top: 50%;
+  left: 50%;
+  border-radius: 2px;
+}
+.miffy-mouth::before {
+  transform: translate(-50%, -50%) rotate(20deg);
+}
+.miffy-mouth::after {
+  transform: translate(-50%, -50%) rotate(-20deg);
+}
+
+/* Body / Dress — rounded bell shape */
+.miffy-body-part {
+  width: 62px;
+  height: 46px;
+  background: var(--dress-color, #FF7F2A);
+  border: 2.5px solid #3a3a3a;
+  border-radius: 12px 12px 50% 50%;
+  margin-top: -6px;
+  z-index: 1;
+  position: relative;
+  box-shadow: inset 0 -6px 12px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+/* Dress flower decoration (yellow stage) */
+.miffy-dress-flower {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+}
+.miffy-dress-flower::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px;
+  width: 6px;
+  height: 6px;
+  background: #FFB347;
+  border-radius: 50%;
+}
+
+/* Arms — short round stubs at body sides, overlapping body edge */
+.miffy-arm {
+  position: absolute;
+  width: 16px;
+  height: 22px;
+  background: #fff;
+  border: 2.5px solid #3a3a3a;
+  border-radius: 50%;
+  z-index: 0;
+}
+.miffy-arm.left {
+  bottom: 18px;
+  left: 15px;
+  transform: rotate(20deg);
+}
+.miffy-arm.right {
+  bottom: 18px;
+  right: 15px;
+  transform: rotate(-20deg);
+}
+
+/* Legs — round little feet, tucked under dress bottom */
+.miffy-leg {
+  position: absolute;
+  width: 20px;
+  height: 16px;
+  background: #fff;
+  border: 2.5px solid #3a3a3a;
+  border-radius: 50%;
+  bottom: -2px;
+  z-index: 0;
+}
+.miffy-leg.left { left: 22px; }
+.miffy-leg.right { right: 22px; }
+
+/* ---- Stage: head only — floating ---- */
+.miffy.miffy-head .miffy-body-part,
+.miffy.miffy-head .miffy-arm,
+.miffy.miffy-head .miffy-leg { display: none; }
+.miffy.miffy-head {
+  animation: miffyAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), miffyFloat 3s ease-in-out infinite;
+}
+@keyframes miffyFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ---- Balloon accessory (blue stage) — held in right hand ---- */
+.miffy-balloon {
+  position: absolute;
+  right: -10px;
+  bottom: 30px;
+  z-index: 3;
+  animation: balloonSway 4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@keyframes balloonSway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(5deg); }
+}
+.miffy-balloon-ball {
+  width: 32px;
+  height: 38px;
+  background: linear-gradient(140deg, #FF9A9A 0%, #FF5252 100%);
+  border: 2.5px solid #3a3a3a;
+  border-radius: 50% 50% 50% 48%;
+  position: relative;
+  box-shadow: 0 3px 10px rgba(255,82,82,0.2);
+}
+.miffy-balloon-shine {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 9px;
+  height: 7px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+.miffy-balloon-string {
+  width: 20px;
+  height: 50px;
+  border: none;
+  border-right: 1.5px solid #3a3a3a;
+  border-radius: 0 0 50% 0;
+  margin: 0 0 0 -4px;
+  background: transparent;
+}
+
+/* ---- Emoji Accessories ---- */
+.miffy-accessory {
+  position: absolute;
+  z-index: 10;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+/* 🎈 Balloon — uses CSS-drawn version above */
+
+/* 👑 Crown — 2 o'clock on head */
+.miffy-acc-crown {
+  font-size: 20px;
+  top: 46px;
+  right: 2px;
+  transform: rotate(40deg);
+}
+
+/* 🎀 Bow — right ear */
+.miffy-acc-bow {
+  font-size: 22px;
+  top: 46px;
+  right: -6px;
+  transform: rotate(15deg);
+}
+
+/* 🦋 Wings — both sides */
+.miffy-acc-wings-l {
+  font-size: 20px;
+  bottom: 28px;
+  left: 6px;
+  transform: scaleX(-1);
+  animation: wingFlapL 1.2s ease-in-out infinite;
+}
+.miffy-acc-wings-r {
+  font-size: 20px;
+  bottom: 28px;
+  right: 6px;
+  animation: wingFlapR 1.2s ease-in-out infinite 0.1s;
+}
+@keyframes wingFlapL {
+  0%, 100% { transform: scaleX(-1) rotate(0deg); }
+  50% { transform: scaleX(-1) rotate(-15deg) scale(0.9); }
+}
+@keyframes wingFlapR {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg) scale(0.9); }
+}
+
+/* 🌈 Halo — top of head */
+.miffy-acc-halo {
+  font-size: 22px;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotateX(60deg);
+  animation: haloGlow 2s ease-in-out infinite;
+}
+@keyframes haloGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,215,0,0.4)); }
+  50% { filter: drop-shadow(0 0 14px rgba(255,215,0,0.8)); }
+}
+
+/* 🌸🌼 Dress icon decoration */
+.miffy-dress-icon {
+  position: absolute;
+  font-size: 14px;
+  bottom: 6px;
+  right: 6px;
+  z-index: 2;
+  line-height: 1;
+}
+.miffy-spin {
+  animation: dressIconSwing 2s ease-in-out infinite;
+}
+@keyframes dressIconSwing {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(15deg); }
+}
+
+/* ---- Rainbow dress overlay (rainbow stage) ---- */
+.miffy-dress-rainbow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg,
+    rgba(255,107,107,0.5) 0%,
+    rgba(255,165,0,0.5) 20%,
+    rgba(255,217,61,0.5) 40%,
+    rgba(102,187,106,0.5) 60%,
+    rgba(74,144,217,0.5) 80%,
+    rgba(171,71,188,0.5) 100%);
+  border-radius: 12px 12px 50% 50%;
+}
+
+/* ---- Idle breathing animation ---- */
+.miffy.miffy-orange,
+.miffy.miffy-blue,
+.miffy.miffy-yellow,
+.miffy.miffy-pink,
+.miffy.miffy-green,
+.miffy.miffy-purple,
+.miffy.miffy-rainbow {
+  animation: miffyAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), miffyBreathe 3.5s ease-in-out infinite;
+}
+@keyframes miffyBreathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.015) translateY(-1px); }
+}
+
+/* ---- Evo timeline mini miffy ---- */
+.evo-miffy .miffy {
+  width: 44px;
+  transform: scale(0.36);
+  transform-origin: top center;
+  margin-bottom: -42px;
+  animation: none;
+}
+.evo-miffy {
+  min-height: 55px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.evo-label {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* Pet scene adjustments for Miffy */
+#pet-emoji .miffy {
+  width: 110px;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.1));
+}
