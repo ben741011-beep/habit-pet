@@ -66,7 +66,7 @@ function renderCompanions(level) {
   document.querySelectorAll('.pet-companion').forEach(el => el.remove());
   if (level <= 1 || !state.pet) return;
   const sp = SPECIES[state.pet.species];
-  if (!sp || !sp.css) return;
+  if (!sp) return;
   const scene = $('#pet-scene');
   const layout = COMPANION_LAYOUTS[Math.min(level, 8)];
   if (!layout) return;
@@ -326,7 +326,7 @@ function checkAndMarkPlanDay() {
         state.plansCompleted = (state.plansCompleted || 0) + 1;
         state.pet.xp += 100;
         saveData();
-        setTimeout(() => showFeedAnimation('🏆', `7天計畫達成！升級 Lv.${1 + state.plansCompleted}`), 500);
+        setTimeout(() => showLevelUpCelebration(1 + state.plansCompleted), 500);
       }
     }
   }
@@ -457,7 +457,7 @@ function completeHabit(habit) {
 
   // Level up?
   if (newLv > prevLv) {
-    setTimeout(() => showFeedAnimation('🎉', `升級 Lv.${newLv}！`), 1300);
+    setTimeout(() => showLevelUpCelebration(newLv), 800);
   }
 
   // Check 7-day plan
@@ -468,38 +468,127 @@ function completeHabit(habit) {
   }, 400);
 }
 
-// ====== Feed Animation ======
+// ====== Feed Animation (Star Explosion) ======
 function showFeedAnimation(emoji, text) {
   const el = $('#feed-animation');
   const textEl = $('#feed-text');
   const particles = $('#feed-particles');
 
-  textEl.innerHTML = typeof text === 'number' ? `${renderIcon(emoji, '28px')} +${text} XP` : `${renderIcon(emoji, '28px')} ${text}`;
+  textEl.innerHTML = typeof text === 'number' ? `${renderIcon(emoji, '28px')} +${text}` : `${renderIcon(emoji, '28px')} ${text}`;
   el.classList.remove('hidden');
 
-  // Add some particles
+  // Star explosion particles ⭐✨🌟💫
   particles.innerHTML = '';
-  const foods = ['🍖','🍗','🥩','🍕','🌮','🍔','🥕','🍎'];
-  for (let i = 0; i < 6; i++) {
+  const stars = ['⭐','✨','🌟','💫','⭐','✨','🌟','💫','⭐','✨','🌟','💫'];
+  for (let i = 0; i < 12; i++) {
     const p = document.createElement('div');
     p.className = 'feed-particle';
-    p.textContent = foods[Math.floor(Math.random() * foods.length)];
-    const angle = (i / 6) * Math.PI * 2;
-    const dist = 60 + Math.random() * 40;
+    p.textContent = stars[i];
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 70 + Math.random() * 50;
     p.style.left = '50%';
     p.style.top = '50%';
     p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
     p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
-    p.style.animation = `particleFly 0.8s ${i * 0.05}s ease-out forwards`;
-    p.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+    p.style.animationDelay = (i * 0.04) + 's';
+    p.style.fontSize = (18 + Math.random() * 16) + 'px';
     particles.appendChild(p);
   }
 
-  // Pet eating animation
+  // Pet bounce
   $('#pet-scene').classList.add('pet-feeding');
   setTimeout(() => $('#pet-scene').classList.remove('pet-feeding'), 700);
 
   setTimeout(() => el.classList.add('hidden'), 1200);
+}
+
+// ====== Level Up Celebration ======
+function showLevelUpCelebration(newLv) {
+  // Create full-screen celebration overlay
+  let overlay = document.getElementById('levelup-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'levelup-overlay';
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div class="levelup-content">
+      <div class="levelup-stars"></div>
+      <div class="levelup-badge">🎉</div>
+      <div class="levelup-text">升級啦！</div>
+      <div class="levelup-level">Lv.${newLv}</div>
+      <div class="levelup-sub">繼續加油！</div>
+    </div>
+  `;
+  overlay.classList.add('active');
+
+  // Firework particles
+  const starsEl = overlay.querySelector('.levelup-stars');
+  const emojis = ['⭐','✨','🌟','🌈','🎉','🎊','💫','❤️','💖','✨'];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'levelup-star';
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = (Math.random() * 0.8) + 's';
+    s.style.animationDuration = (1.5 + Math.random()) + 's';
+    s.style.fontSize = (16 + Math.random() * 20) + 'px';
+    starsEl.appendChild(s);
+  }
+
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    setTimeout(() => { overlay.innerHTML = ''; }, 500);
+  }, 2800);
+}
+
+// ====== Pet Interaction (Click to react) ======
+const PET_MESSAGES = [
+  '你好棒！👍', '我愛你！❤️', '繼續加油！💪',
+  '今天也要努力喔！', '摸摸頭~🥰', '嘿嘿！😄',
+  '我好開心！😊', '你是最棒的！✨', '謝謝你陵我！',
+  '再多做一個習慣吧！', '感覺好溫暖喔~', '🌸好美的一天！',
+];
+let lastPetTap = 0;
+
+function initPetInteraction() {
+  const petEl = $('#pet-container');
+  if (!petEl) return;
+  petEl.style.cursor = 'pointer';
+  petEl.addEventListener('click', () => {
+    const now = Date.now();
+    if (now - lastPetTap < 800) return; // debounce
+    lastPetTap = now;
+
+    // Jump animation
+    petEl.classList.add('pet-jump');
+    setTimeout(() => petEl.classList.remove('pet-jump'), 600);
+
+    // Speech bubble
+    let bubble = document.getElementById('pet-speech');
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.id = 'pet-speech';
+      $('#pet-scene').appendChild(bubble);
+    }
+    const msg = PET_MESSAGES[Math.floor(Math.random() * PET_MESSAGES.length)];
+    bubble.textContent = msg;
+    bubble.classList.remove('show');
+    void bubble.offsetWidth; // reflow
+    bubble.classList.add('show');
+    setTimeout(() => bubble.classList.remove('show'), 2000);
+
+    // Mini hearts float up
+    for (let i = 0; i < 4; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'pet-tap-heart';
+      heart.textContent = ['❤️','🧡','💛','💜'][i];
+      heart.style.left = (40 + Math.random() * 20) + '%';
+      heart.style.animationDelay = (i * 0.15) + 's';
+      $('#pet-scene').appendChild(heart);
+      setTimeout(() => heart.remove(), 1500);
+    }
+  });
 }
 
 // ====== Render: Habits Management ======
@@ -760,6 +849,7 @@ function renderPage(page) {
 function renderAll() {
   renderPetPage();
   renderOnboarding();
+  initPetInteraction();
 }
 
 // ====== QR Code Transfer ======
