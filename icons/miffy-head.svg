@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220">
-  <!-- Left Ear - tall, narrow, slightly apart -->
-  <path d="M80,90 C80,30 72,2 72,2 C68,2 60,30 60,90" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
-  <!-- Right Ear -->
-  <path d="M120,90 C120,30 128,2 128,2 C132,2 140,30 140,90" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
+  <!-- Left Ear - rounded -->
+  <ellipse cx="75" cy="55" rx="12" ry="50" fill="#FFF" stroke="#333" stroke-width="2.8"/>
+  <!-- Right Ear - rounded -->
+  <ellipse cx="125" cy="55" rx="12" ry="50" fill="#FFF" stroke="#333" stroke-width="2.8"/>
   <!-- Head - round -->
   <circle cx="100" cy="135" r="65" fill="#FFF" stroke="#333" stroke-width="2.8"/>
   <!-- Left Eye - simple dot -->
