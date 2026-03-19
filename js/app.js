@@ -3,7 +3,7 @@
    Data in localStorage · Offline-ready PWA
    =================================================================== */
 
-const APP_VERSION = 'v1.1.0 (2026-03-18)';
+const APP_VERSION = 'v1.2.0 (2026-03-19)';
 
 // ====== Pet Species Config ======
 const SPECIES = {
