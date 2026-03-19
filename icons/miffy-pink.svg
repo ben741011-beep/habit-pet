@@ -1,58 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 310">
-  <defs>
-    <radialGradient id="bL" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0%" stop-color="#FF9AAA" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#FF9AAA" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="dress" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFa0bb"/>
-      <stop offset="100%" stop-color="#FF8FAB"/>
-    </linearGradient>
-  </defs>
   <!-- Left Ear -->
-  <ellipse cx="72" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-6,72,32)"/>
-  <ellipse cx="72" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(-6,72,32)" opacity="0.7"/>
+  <path d="M80,82 C80,22 72,0 72,0 C68,0 60,22 60,82" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
   <!-- Right Ear -->
-  <ellipse cx="128" cy="32" rx="16" ry="42" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(6,128,32)"/>
-  <ellipse cx="128" cy="32" rx="8" ry="28" fill="#FFD0D9" transform="rotate(6,128,32)" opacity="0.7"/>
-  <!-- Bow on right ear 🎀 -->
-  <g transform="translate(148,42)">
-    <ellipse cx="-8" cy="0" rx="10" ry="7" fill="#FF4081" opacity="0.85" transform="rotate(-15)"/>
-    <ellipse cx="8" cy="0" rx="10" ry="7" fill="#FF4081" opacity="0.85" transform="rotate(15)"/>
-    <circle cx="0" cy="0" r="3.5" fill="#E91E63"/>
-  </g>
-  <!-- Head -->
-  <circle cx="100" cy="105" r="62" fill="#FFF" stroke="#555" stroke-width="2.5"/>
-  <!-- L Eye -->
-  <ellipse cx="80" cy="96" rx="4" ry="5" fill="#2D3436"/>
-  <circle cx="78.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
-  <!-- R Eye -->
-  <ellipse cx="120" cy="96" rx="4" ry="5" fill="#2D3436"/>
-  <circle cx="118.5" cy="94.5" r="1.5" fill="#FFF" opacity="0.85"/>
-  <!-- Blush -->
-  <circle cx="60" cy="114" r="11" fill="url(#bL)"/>
-  <circle cx="140" cy="114" r="11" fill="url(#bL)"/>
-  <!-- Nose -->
-  <circle cx="100" cy="112" r="2" fill="#C9888A"/>
-  <!-- X Mouth -->
-  <line x1="94" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
-  <line x1="106" y1="120" x2="100" y2="126" stroke="#555" stroke-width="2" stroke-linecap="round"/>
-  <line x1="94" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
-  <line x1="106" y1="126" x2="100" y2="120" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+  <path d="M120,82 C120,22 128,0 128,0 C132,0 140,22 140,82" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
+
   <!-- Dress -->
-  <path d="M62,162 C58,162 52,185 50,210 C48,240 52,255 60,265 C70,278 85,284 100,284 C115,284 130,278 140,265 C148,255 152,240 150,210 C148,185 142,162 138,162 Z" fill="url(#dress)" stroke="#555" stroke-width="2.5"/>
-  <path d="M75,170 C72,180 70,200 72,220 C74,230 80,240 90,245" fill="none" stroke="#FFF" stroke-width="3" opacity="0.15" stroke-linecap="round"/>
-  <!-- Heart pattern on dress -->
-  <g opacity="0.3" fill="#FFF">
-    <path d="M95,215 C93,212 88,212 88,216 C88,220 95,224 95,224 C95,224 102,220 102,216 C102,212 97,212 95,215Z"/>
-    <path d="M110,245 C109,243 106,243 106,245.5 C106,248 110,250.5 110,250.5 C110,250.5 114,248 114,245.5 C114,243 111,243 110,245Z" transform="scale(0.8) translate(22,40)"/>
+  <path d="M 78,170 L 72,172 L 56,182 C 52,184 48,188 46,192 L 46,196 C 46,196 52,196 58,194 L 52,270 C 54,278 70,290 100,290 C 130,290 146,278 148,270 L 142,194 C 148,196 154,196 154,196 L 154,192 C 152,188 148,184 144,182 L 128,172 L 122,170 Z" fill="#FF8FAB" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
+  <path d="M78,170 C85,175 95,177 100,177 C105,177 115,175 122,170" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <!-- Heart on dress -->
+  <g opacity="0.25" fill="#FFF">
+    <path d="M95,235 C93,232 89,232 89,235 C89,239 95,243 95,243 C95,243 101,239 101,235 C101,232 97,232 95,235Z"/>
   </g>
-  <!-- Left Arm -->
-  <ellipse cx="46" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(-15,46,200)"/>
-  <!-- Right Arm -->
-  <ellipse cx="154" cy="200" rx="14" ry="10" fill="#FFF" stroke="#555" stroke-width="2.5" transform="rotate(15,154,200)"/>
+
+  <!-- Left arm -->
+  <path d="M46,192 C38,194 32,198 30,204 C28,210 32,214 38,214 C44,214 50,210 52,204" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
+  <!-- Right arm -->
+  <path d="M154,192 C162,194 168,198 170,204 C172,210 168,214 162,214 C156,214 150,210 148,204" fill="#FFF" stroke="#333" stroke-width="2.8" stroke-linejoin="round"/>
+
+  <path d="M52,270 C60,274 78,280 100,280 C122,280 140,274 148,270" fill="none" stroke="#333" stroke-width="1.5" opacity="0.3"/>
   <!-- Left Foot -->
-  <ellipse cx="78" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <ellipse cx="78" cy="292" rx="16" ry="9" fill="#FFF" stroke="#333" stroke-width="2.5"/>
   <!-- Right Foot -->
-  <ellipse cx="122" cy="290" rx="16" ry="9" fill="#FFF" stroke="#555" stroke-width="2.5"/>
+  <ellipse cx="122" cy="292" rx="16" ry="9" fill="#FFF" stroke="#333" stroke-width="2.5"/>
+
+  <!-- Head -->
+  <circle cx="100" cy="120" r="60" fill="#FFF" stroke="#333" stroke-width="2.8"/>
+  <!-- Left Eye -->
+  <circle cx="80" cy="112" r="4" fill="#333"/>
+  <!-- Right Eye -->
+  <circle cx="120" cy="112" r="4" fill="#333"/>
+  <!-- X Mouth -->
+  <line x1="95" y1="132" x2="105" y2="140" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+  <line x1="105" y1="132" x2="95" y2="140" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Bow on right ear -->
+  <g transform="translate(148,36)">
+    <ellipse cx="-7" cy="0" rx="9" ry="6" fill="#FF4081" opacity="0.85" transform="rotate(-15)"/>
+    <ellipse cx="7" cy="0" rx="9" ry="6" fill="#FF4081" opacity="0.85" transform="rotate(15)"/>
+    <circle cx="0" cy="0" r="3" fill="#E91E63"/>
+  </g>
 </svg>
