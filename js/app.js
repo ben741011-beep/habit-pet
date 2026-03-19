@@ -9,32 +9,64 @@ const APP_VERSION = 'v1.1.0 (2026-03-18)';
 const SPECIES = {
   cat:    { name: '貓咪', icon: '🐱', stages: ['🥚','🐱','😺','😸','🦁'], stageLv: [1,3,10,25,50] },
   dog:    { name: '狗狗', icon: '🐶', stages: ['🥚','🐶','🐕','🦮','🐺'], stageLv: [1,3,10,25,50] },
-  rabbit: { name: '兔兔', icon: '🐰', stages: ['🥚','miffy-head','miffy-body','miffy-arms','miffy-full'], stageLv: [1,3,10,25,50], css: true,
-    stageLabels: ['蛋蛋','頭','頭+身體','頭+身體+手','完整米菲'] },
+  rabbit: { name: '兔兔', icon: '🐰', stages: ['🥚','miffy-head','miffy-orange','miffy-blue','miffy-yellow','miffy-pink','miffy-green','miffy-purple','miffy-rainbow'], stageLv: [1,3,10,25,50,75,100,150,200], css: true,
+    stageLabels: ['蛋蛋','小臉','橘衣米菲','藍衣米菲','黃衣米菲','粉衣米菲','綠衣米菲','紫衣米菲','彩虹米菲'] },
   dragon: { name: '龍龍', icon: '🐲', stages: ['🥚','🐣','🐲','🐉','🔥'], stageLv: [1,3,10,25,50] },
 };
 
 // Miffy-style CSS rabbit HTML for each stage
 function renderMiffy(stage) {
-  const showBody = ['miffy-body','miffy-arms','miffy-full'].includes(stage);
-  const showArms = ['miffy-arms','miffy-full'].includes(stage);
-  const showLegs = stage === 'miffy-full';
+  const hasBody = stage !== 'miffy-head';
+  const hasArms = hasBody;
+  const hasLegs = hasBody;
+
+  // Different dress colors per stage
+  let dressColor = '#FF6B6B';
+  let accessory = '';
+  let dressPattern = '';
+  if (stage === 'miffy-orange') {
+    dressColor = '#FF7F2A';
+  } else if (stage === 'miffy-blue') {
+    dressColor = '#4A90D9';
+    accessory = '<div class="miffy-balloon"><div class="miffy-balloon-ball"><div class="miffy-balloon-shine"></div></div><div class="miffy-balloon-string"></div></div>';
+  } else if (stage === 'miffy-yellow') {
+    dressColor = '#FFD93D';
+    dressPattern = '<span class="miffy-dress-icon">🌸</span>';
+    accessory = '<span class="miffy-accessory miffy-acc-crown">👑</span>';
+  } else if (stage === 'miffy-pink') {
+    dressColor = '#FF8FAB';
+    dressPattern = '<span class="miffy-dress-icon miffy-spin">🎀</span>';
+  } else if (stage === 'miffy-green') {
+    dressColor = '#66BB6A';
+    dressPattern = '<span class="miffy-dress-icon miffy-spin">🌼</span>';
+  } else if (stage === 'miffy-purple') {
+    dressColor = '#AB47BC';
+    dressPattern = '<span class="miffy-dress-icon miffy-spin">🦋</span>';
+  } else if (stage === 'miffy-rainbow') {
+    dressColor = '#FF6B6B';
+    dressPattern = '<div class="miffy-dress-rainbow"></div>';
+  }
+
   return `
-    <div class="miffy ${stage}">
+    <div class="miffy ${stage}" style="--dress-color:${dressColor}">
       <div class="miffy-ears">
         <div class="miffy-ear left"></div>
         <div class="miffy-ear right"></div>
       </div>
-      <div class="miffy-head">
+      <div class="miffy-face">
         <div class="miffy-eyes">
-          <div class="miffy-eye left"></div>
-          <div class="miffy-eye right"></div>
+          <div class="miffy-eye left"><div class="miffy-eye-shine"></div></div>
+          <div class="miffy-eye right"><div class="miffy-eye-shine"></div></div>
         </div>
+        <div class="miffy-blush left"></div>
+        <div class="miffy-blush right"></div>
+        <div class="miffy-nose"></div>
         <div class="miffy-mouth"></div>
       </div>
-      ${showBody ? '<div class="miffy-body-part"></div>' : ''}
-      ${showArms ? '<div class="miffy-arm left"></div><div class="miffy-arm right"></div>' : ''}
-      ${showLegs ? '<div class="miffy-leg left"></div><div class="miffy-leg right"></div>' : ''}
+      ${hasBody ? `<div class="miffy-body-part">${dressPattern}</div>` : ''}
+      ${hasArms ? '<div class="miffy-arm left"></div><div class="miffy-arm right"></div>' : ''}
+      ${hasLegs ? '<div class="miffy-leg left"></div><div class="miffy-leg right"></div>' : ''}
+      ${accessory}
     </div>
   `;
 }

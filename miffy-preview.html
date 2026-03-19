@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>兔兔進化預覽</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F0EDFF; display: flex; flex-direction: column; align-items: center; padding: 24px 16px; min-height: 100vh; }
+    h1 { color: #6C5CE7; font-size: 28px; margin-bottom: 4px; }
+    p.hint { color: #999; font-size: 14px; margin: 0 0 24px; }
+    .stages { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; max-width: 900px; }
+    .stage-box { text-align: center; background: #fff; border-radius: 24px; padding: 20px 12px 16px; box-shadow: 0 4px 20px rgba(108,92,231,0.1); min-width: 140px; max-width: 160px; transition: transform 0.3s, box-shadow 0.3s; }
+    .stage-box:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 12px 32px rgba(108,92,231,0.18); }
+    .stage-box h3 { margin: 14px 0 4px; color: #2D3436; font-size: 16px; font-weight: 800; }
+    .stage-box p { margin: 0; color: #888; font-size: 12px; }
+    .pet-scene { height: 200px; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #C4B8FF 0%, #E8E4FF 50%, #C8E6C9 85%, #81C784 100%); border-radius: 18px; position: relative; overflow: visible; padding: 16px; }
+    .egg { font-size: 72px; animation: eggWobble 2s ease-in-out infinite; }
+    @keyframes eggWobble { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-5deg)} 75%{transform:rotate(5deg)} }
+
+    .miffy { position: relative; display: flex; flex-direction: column; align-items: center; width: 110px; animation: miffyAppear 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes miffyAppear { from{transform:scale(0.3) translateY(20px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+    .miffy-ears { display:flex; justify-content:center; gap:6px; margin-bottom:-10px; z-index:1; }
+    .miffy-ear { width:20px; height:56px; background:#fff; border:2.5px solid #3a3a3a; border-radius:50%; position:relative; }
+    .miffy-ear.left { transform:rotate(-6deg); }
+    .miffy-ear.right { transform:rotate(6deg); }
+    .miffy-ear::after { content:''; position:absolute; top:12px; left:50%; transform:translateX(-50%); width:8px; height:32px; background:linear-gradient(180deg,#FFD5DD,#FFBCC8); border-radius:50%; opacity:0.85; }
+    .miffy-face { width:82px; height:78px; background:#fff; border:2.5px solid #3a3a3a; border-radius:50%; position:relative; z-index:2; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+    .miffy-eyes { display:flex; justify-content:center; gap:22px; padding-top:26px; }
+    .miffy-eye { width:6px; height:7px; background:#2D3436; border-radius:50%; position:relative; }
+    .miffy-eye-shine { position:absolute; top:0.5px; right:-0.5px; width:2.5px; height:2.5px; background:#fff; border-radius:50%; }
+    .miffy-blush { position:absolute; width:16px; height:11px; background:radial-gradient(ellipse,rgba(255,170,170,0.55) 0%,transparent 70%); border-radius:50%; top:40px; }
+    .miffy-blush.left { left:8px; }
+    .miffy-blush.right { right:8px; }
+    .miffy-nose { position:absolute; top:44px; left:50%; transform:translateX(-50%); width:3px; height:2.5px; background:#dfa0a0; border-radius:50%; }
+    .miffy-mouth { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); width:14px; height:10px; }
+    .miffy-mouth::before,.miffy-mouth::after { content:''; position:absolute; width:13px; height:2px; background:#3a3a3a; top:50%; left:50%; border-radius:2px; }
+    .miffy-mouth::before { transform:translate(-50%,-50%) rotate(20deg); }
+    .miffy-mouth::after { transform:translate(-50%,-50%) rotate(-20deg); }
+    .miffy-body-part { width:62px; height:46px; background:var(--dress-color,#FF7F2A); border:2.5px solid #3a3a3a; border-radius:12px 12px 50% 50%; margin-top:-6px; z-index:1; position:relative; box-shadow:inset 0 -6px 12px rgba(0,0,0,0.06); overflow:hidden; }
+    .miffy-arm { position:absolute; width:16px; height:22px; background:#fff; border:2.5px solid #3a3a3a; border-radius:50%; z-index:0; }
+    .miffy-arm.left { bottom:18px; left:15px; transform:rotate(20deg); }
+    .miffy-arm.right { bottom:18px; right:15px; transform:rotate(-20deg); }
+    .miffy-leg { position:absolute; width:20px; height:16px; background:#fff; border:2.5px solid #3a3a3a; border-radius:50%; bottom:-2px; z-index:0; }
+    .miffy-leg.left { left:22px; }
+    .miffy-leg.right { right:22px; }
+    .miffy.miffy-head .miffy-body-part,.miffy.miffy-head .miffy-arm,.miffy.miffy-head .miffy-leg { display:none; }
+    .miffy.miffy-head { animation: miffyAppear 0.6s cubic-bezier(0.34,1.56,0.64,1), miffyFloat 3s ease-in-out infinite; }
+    @keyframes miffyFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+    .miffy-balloon { position:absolute; right:-10px; bottom:30px; z-index:3; animation:balloonSway 4s ease-in-out infinite; transform-origin:bottom center; }
+    @keyframes balloonSway { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(5deg)} }
+    .miffy-balloon-ball { width:32px; height:38px; background:linear-gradient(140deg,#FF9A9A,#FF5252); border:2.5px solid #3a3a3a; border-radius:50% 50% 50% 48%; position:relative; box-shadow:0 3px 10px rgba(255,82,82,0.2); }
+    .miffy-balloon-shine { position:absolute; top:7px; left:8px; width:9px; height:7px; background:rgba(255,255,255,0.5); border-radius:50%; transform:rotate(-25deg); }
+    .miffy-balloon-string { width:20px; height:50px; border:none; border-right:1.5px solid #3a3a3a; border-radius:0 0 50% 0; margin:0 0 0 -4px; background:transparent; }
+
+    /* Emoji Accessories */
+    .miffy-accessory { position:absolute; z-index:10; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+    .miffy-acc-balloon { font-size:28px; right:-6px; bottom:28px; animation:balloonSway 4s ease-in-out infinite; transform-origin:bottom center; }
+    @keyframes balloonSway { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(8deg)} }
+    .miffy-acc-crown { font-size:20px; top:46px; right:2px; transform:rotate(40deg); }
+    .miffy-acc-bow { font-size:22px; top:46px; right:-6px; transform:rotate(15deg); }
+    .miffy-acc-wings-l { font-size:20px; bottom:28px; left:6px; transform:scaleX(-1); animation:wingFlapL 1.2s ease-in-out infinite; }
+    .miffy-acc-wings-r { font-size:20px; bottom:28px; right:6px; animation:wingFlapR 1.2s ease-in-out infinite 0.1s; }
+    @keyframes wingFlapL { 0%,100%{transform:scaleX(-1) rotate(0deg)} 50%{transform:scaleX(-1) rotate(-15deg) scale(0.9)} }
+    @keyframes wingFlapR { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(15deg) scale(0.9)} }
+    .miffy-acc-halo { font-size:22px; top:-6px; left:50%; transform:translateX(-50%) rotateX(60deg); animation:haloGlow 2s ease-in-out infinite; }
+    @keyframes haloGlow { 0%,100%{filter:drop-shadow(0 0 6px rgba(255,215,0,0.4))} 50%{filter:drop-shadow(0 0 14px rgba(255,215,0,0.8))} }
+    .miffy-dress-icon { position:absolute; font-size:14px; bottom:6px; right:6px; z-index:2; line-height:1; }
+    .miffy-spin { animation:dressIconSwing 2s ease-in-out infinite; }
+    @keyframes dressIconSwing { 0%,100%{transform:rotate(-15deg)} 50%{transform:rotate(15deg)} }
+    .miffy-dress-rainbow { position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(180deg, rgba(255,107,107,0.5) 0%, rgba(255,165,0,0.5) 20%, rgba(255,217,61,0.5) 40%, rgba(102,187,106,0.5) 60%, rgba(74,144,217,0.5) 80%, rgba(171,71,188,0.5) 100%); border-radius:12px 12px 50% 50%; }
+
+    .miffy.miffy-orange,.miffy.miffy-blue,.miffy.miffy-yellow,.miffy.miffy-pink,.miffy.miffy-green,.miffy.miffy-purple,.miffy.miffy-rainbow { animation: miffyAppear 0.6s cubic-bezier(0.34,1.56,0.64,1), miffyBreathe 3.5s ease-in-out infinite; }
+    @keyframes miffyBreathe { 0%,100%{transform:scaleY(1)} 50%{transform:scaleY(1.015) translateY(-1px)} }
+  </style>
+</head>
+<body>
+  <h1>🐰 兔兔進化預覽</h1>
+  <p class="hint">每個等級解鎖不同造型！共 9 個階段</p>
+  <div class="stages">
+
+    <div class="stage-box">
+      <div class="pet-scene"><span class="egg">🥚</span></div>
+      <h3>Lv.1</h3><p>蛋蛋</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-head">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+        </div>
+      </div>
+      <h3>Lv.3</h3><p>小臉</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-orange" style="--dress-color:#FF7F2A">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+        </div>
+      </div>
+      <h3>Lv.10</h3><p>橘衣兔兔</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-blue" style="--dress-color:#4A90D9">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+          <div class="miffy-balloon"><div class="miffy-balloon-ball"><div class="miffy-balloon-shine"></div></div><div class="miffy-balloon-string"></div></div>
+        </div>
+      </div>
+      <h3>Lv.25</h3><p>藍衣兔兔 🎈</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-yellow" style="--dress-color:#FFD93D">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"><span class="miffy-dress-icon">🌸</span></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+          <span class="miffy-accessory miffy-acc-crown">👑</span>
+        </div>
+      </div>
+      <h3>Lv.50</h3><p>皇冠兔兔 👑</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-pink" style="--dress-color:#FF8FAB">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"><span class="miffy-dress-icon miffy-spin">🎀</span></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+        </div>
+      </div>
+      <h3>Lv.75</h3><p>粉衣兔兔 🎀</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-green" style="--dress-color:#66BB6A">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"><span class="miffy-dress-icon miffy-spin">🌼</span></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+        </div>
+      </div>
+      <h3>Lv.100</h3><p>綠衣兔兔 🌼</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-purple" style="--dress-color:#AB47BC">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"><span class="miffy-dress-icon miffy-spin">🦋</span></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+        </div>
+      </div>
+      <h3>Lv.150</h3><p>紫衣兔兔 🦋</p>
+    </div>
+
+    <div class="stage-box">
+      <div class="pet-scene">
+        <div class="miffy miffy-rainbow" style="--dress-color:#FF6B6B">
+          <div class="miffy-ears"><div class="miffy-ear left"></div><div class="miffy-ear right"></div></div>
+          <div class="miffy-face">
+            <div class="miffy-eyes"><div class="miffy-eye left"><div class="miffy-eye-shine"></div></div><div class="miffy-eye right"><div class="miffy-eye-shine"></div></div></div>
+            <div class="miffy-blush left"></div><div class="miffy-blush right"></div>
+            <div class="miffy-nose"></div><div class="miffy-mouth"></div>
+          </div>
+          <div class="miffy-body-part"><div class="miffy-dress-rainbow"></div></div>
+          <div class="miffy-arm left"></div><div class="miffy-arm right"></div>
+          <div class="miffy-leg left"></div><div class="miffy-leg right"></div>
+        </div>
+      </div>
+      <h3>Lv.200</h3><p>彩虹兔兔 🌈</p>
+    </div>
+
+  </div>
+</body>
+</html>
