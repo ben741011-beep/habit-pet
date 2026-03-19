@@ -70,16 +70,34 @@ function renderMiffy(stage) {
 
 const HABIT_EMOJIS = ['💪','📖','🦷','🧹','🏃','💤','🥗','🧘','✏️','🎹','🚿','🌅','💊','🚶','🧠','🎯','💧','🍎','📵','🙏','🍼','pacifier'];
 
-// Companion rabbit positions: 中左右 左右 左右
-const COMPANION_POSITIONS = [
-  { left: '28%', bottom: '38px' },   // Lv.2: left close
-  { left: '68%', bottom: '38px' },   // Lv.3: right close
-  { left: '14%', bottom: '36px' },   // Lv.4: left medium
-  { left: '82%', bottom: '36px' },   // Lv.5: right medium
-  { left: '6%',  bottom: '34px' },   // Lv.6: left far
-  { left: '90%', bottom: '34px' },   // Lv.7: right far
-  { left: '43%', bottom: '40px' },   // Lv.8: center behind main
-];
+// Companion rabbit layout per level (left-to-right order, stage indices)
+// Lv.2: [2]           → center
+// Lv.3: [2,3]         → left, right
+// Lv.4: [2,4,3]       → left, center, right
+// Lv.5: [2,4,5,3]     → ...expanding outward
+// Lv.6: [2,4,6,5,3]
+// Lv.7: [2,4,6,7,5,3]
+// Lv.8: [2,4,6,8,7,5,3]
+const COMPANION_LAYOUTS = {
+  2: [1],
+  3: [1, 2],
+  4: [1, 3, 2],
+  5: [1, 3, 4, 2],
+  6: [1, 3, 5, 4, 2],
+  7: [1, 3, 5, 6, 4, 2],
+  8: [1, 3, 5, 7, 6, 4, 2],
+};
+
+// Evenly spaced positions for N companions (left-to-right %)
+const COMPANION_SPREADS = {
+  1: [50],
+  2: [28, 72],
+  3: [18, 50, 82],
+  4: [12, 36, 64, 88],
+  5: [8, 28, 50, 72, 92],
+  6: [6, 22, 40, 60, 78, 94],
+  7: [4, 18, 34, 50, 66, 82, 96],
+};
 
 function renderCompanions(level) {
   document.querySelectorAll('.pet-companion').forEach(el => el.remove());
@@ -87,14 +105,17 @@ function renderCompanions(level) {
   const sp = SPECIES[state.pet.species];
   if (!sp || !sp.css) return;
   const scene = $('#pet-scene');
-  const n = Math.min(level - 1, COMPANION_POSITIONS.length);
-  for (let i = 0; i < n; i++) {
-    const pos = COMPANION_POSITIONS[i];
+  const layout = COMPANION_LAYOUTS[Math.min(level, 8)];
+  if (!layout) return;
+  const positions = COMPANION_SPREADS[layout.length];
+  for (let i = 0; i < layout.length; i++) {
+    const stageIdx = layout[i];
+    const stage = sp.stages[stageIdx] || sp.stages[sp.stages.length - 1];
     const el = document.createElement('div');
     el.className = 'pet-companion';
-    el.innerHTML = renderMiffy(sp.stages[i]);
-    el.style.left = pos.left;
-    el.style.bottom = pos.bottom;
+    el.innerHTML = renderMiffy(stage);
+    el.style.left = positions[i] + '%';
+    el.style.bottom = '38px';
     el.style.animationDelay = (i * 0.3) + 's';
     scene.appendChild(el);
   }
