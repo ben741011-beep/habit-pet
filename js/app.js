@@ -3,7 +3,124 @@
    Data in localStorage · Offline-ready PWA
    =================================================================== */
 
-const APP_VERSION = 'v1.4.0 (2026-03-19)';
+const APP_VERSION = 'v1.5.0 (2026-03-19)';
+
+// ====== Audio System (Web Audio API) ======
+let audioCtx = null;
+let bgmGain = null;
+let sfxEnabled = true;
+let bgmEnabled = true;
+let bgmInterval = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// --- Sound Effects ---
+function playSfx(type) {
+  if (!sfxEnabled) return;
+  const ctx = getAudioCtx();
+  const now = ctx.currentTime;
+  if (type === 'ding') {
+    // Cheerful "ding" for completing a habit
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(880, now);
+    o.frequency.setValueAtTime(1175, now + 0.08);
+    g.gain.setValueAtTime(0.25, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    o.connect(g).connect(ctx.destination);
+    o.start(now); o.stop(now + 0.4);
+  } else if (type === 'pop') {
+    // Cute "pop" for pet tap
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(600, now);
+    o.frequency.exponentialRampToValueAtTime(900, now + 0.06);
+    o.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+    g.gain.setValueAtTime(0.2, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    o.connect(g).connect(ctx.destination);
+    o.start(now); o.stop(now + 0.25);
+  } else if (type === 'levelup') {
+    // Triumphant ascending notes
+    [523, 659, 784, 1047].forEach((freq, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(freq, now + i * 0.15);
+      g.gain.setValueAtTime(0, now + i * 0.15);
+      g.gain.linearRampToValueAtTime(0.2, now + i * 0.15 + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.35);
+      o.connect(g).connect(ctx.destination);
+      o.start(now + i * 0.15); o.stop(now + i * 0.15 + 0.4);
+    });
+  }
+}
+
+// --- Background Music (gentle loop) ---
+const BGM_MELODY = [
+  // [freq, duration(s)]
+  [523,0.4],[587,0.4],[659,0.4],[523,0.4],
+  [659,0.4],[698,0.4],[784,0.8],
+  [784,0.3],[880,0.3],[784,0.3],[698,0.3],[659,0.4],[523,0.4],
+  [523,0.4],[392,0.4],[523,0.8],
+  [0, 0.8],  // rest
+];
+
+function startBgm() {
+  if (bgmInterval) return;
+  const ctx = getAudioCtx();
+  bgmGain = ctx.createGain();
+  bgmGain.gain.value = 0.06; // very soft
+  bgmGain.connect(ctx.destination);
+  let noteIdx = 0;
+  function playNote() {
+    if (!bgmEnabled) return;
+    const [freq, dur] = BGM_MELODY[noteIdx % BGM_MELODY.length];
+    if (freq > 0) {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.06, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur * 0.9);
+      o.connect(g).connect(bgmGain);
+      o.start(); o.stop(ctx.currentTime + dur);
+    }
+    noteIdx++;
+    bgmInterval = setTimeout(playNote, dur * 1000);
+  }
+  playNote();
+}
+
+function stopBgm() {
+  if (bgmInterval) { clearTimeout(bgmInterval); bgmInterval = null; }
+}
+
+function toggleSound() {
+  sfxEnabled = !sfxEnabled;
+  bgmEnabled = sfxEnabled;
+  if (bgmEnabled) { startBgm(); } else { stopBgm(); }
+  localStorage.setItem('habit-pet-sound', sfxEnabled ? 'on' : 'off');
+  updateSoundBtn();
+}
+
+function updateSoundBtn() {
+  const btn = document.getElementById('btn-sound');
+  if (btn) btn.textContent = sfxEnabled ? '🔊' : '🔇';
+}
+
+function initSound() {
+  const saved = localStorage.getItem('habit-pet-sound');
+  sfxEnabled = saved !== 'off';
+  bgmEnabled = sfxEnabled;
+  updateSoundBtn();
+}
 
 // ====== Pet Species Config ======
 const SPECIES = {
@@ -326,7 +443,7 @@ function checkAndMarkPlanDay() {
         state.plansCompleted = (state.plansCompleted || 0) + 1;
         state.pet.xp += 100;
         saveData();
-        setTimeout(() => showLevelUpCelebration(1 + state.plansCompleted), 500);
+        setTimeout(() => { showLevelUpCelebration(1 + state.plansCompleted); playSfx('levelup'); }, 500);
       }
     }
   }
@@ -454,10 +571,11 @@ function completeHabit(habit) {
 
   // Animations
   showFeedAnimation(habit.emoji, '✅');
+  playSfx('ding');
 
   // Level up?
   if (newLv > prevLv) {
-    setTimeout(() => showLevelUpCelebration(newLv), 800);
+    setTimeout(() => { showLevelUpCelebration(newLv); playSfx('levelup'); }, 800);
   }
 
   // Check 7-day plan
@@ -563,6 +681,7 @@ function initPetInteraction() {
     // Jump animation
     petEl.classList.add('pet-jump');
     setTimeout(() => petEl.classList.remove('pet-jump'), 600);
+    playSfx('pop');
 
     // Speech bubble
     let bubble = document.getElementById('pet-speech');
@@ -763,7 +882,7 @@ function renderEvolutionTimeline(currentLevel) {
     stage.className = 'evo-stage' + (!reached ? ' locked' : '') + (isCurrent ? ' current' : '');
 
     let emojiHtml;
-    if (sp.css && emoji.startsWith('miffy')) {
+    if (sp.images && sp.images[emoji]) {
       emojiHtml = `<div class="evo-emoji evo-miffy">${renderMiffy(emoji)}</div>`;
     } else {
       emojiHtml = `<div class="evo-emoji">${emoji}</div>`;
@@ -850,7 +969,14 @@ function renderAll() {
   renderPetPage();
   renderOnboarding();
   initPetInteraction();
+  initSound();
 }
+
+// Start BGM on first user interaction
+document.addEventListener('click', function _startBgm() {
+  if (bgmEnabled) startBgm();
+  document.removeEventListener('click', _startBgm);
+}, { once: true });
 
 // ====== QR Code Transfer ======
 function compressData() {
