@@ -30,7 +30,7 @@ function playSfx(type) {
     o.type = 'sine';
     o.frequency.setValueAtTime(880, now);
     o.frequency.setValueAtTime(1175, now + 0.08);
-    g.gain.setValueAtTime(0.25, now);
+    g.gain.setValueAtTime(0.6, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
     o.connect(g).connect(ctx.destination);
     o.start(now); o.stop(now + 0.4);
@@ -42,7 +42,7 @@ function playSfx(type) {
     o.frequency.setValueAtTime(600, now);
     o.frequency.exponentialRampToValueAtTime(900, now + 0.06);
     o.frequency.exponentialRampToValueAtTime(400, now + 0.15);
-    g.gain.setValueAtTime(0.2, now);
+    g.gain.setValueAtTime(0.5, now);
     g.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
     o.connect(g).connect(ctx.destination);
     o.start(now); o.stop(now + 0.25);
@@ -54,7 +54,7 @@ function playSfx(type) {
       o.type = 'triangle';
       o.frequency.setValueAtTime(freq, now + i * 0.15);
       g.gain.setValueAtTime(0, now + i * 0.15);
-      g.gain.linearRampToValueAtTime(0.2, now + i * 0.15 + 0.05);
+      g.gain.linearRampToValueAtTime(0.5, now + i * 0.15 + 0.05);
       g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.35);
       o.connect(g).connect(ctx.destination);
       o.start(now + i * 0.15); o.stop(now + i * 0.15 + 0.4);
@@ -76,7 +76,7 @@ function startBgm() {
   if (bgmInterval) return;
   const ctx = getAudioCtx();
   bgmGain = ctx.createGain();
-  bgmGain.gain.value = 0.06; // very soft
+  bgmGain.gain.value = 0.25; // normal volume
   bgmGain.connect(ctx.destination);
   let noteIdx = 0;
   function playNote() {
@@ -87,7 +87,7 @@ function startBgm() {
       const g = ctx.createGain();
       o.type = 'sine';
       o.frequency.value = freq;
-      g.gain.setValueAtTime(0.06, ctx.currentTime);
+      g.gain.setValueAtTime(0.25, ctx.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur * 0.9);
       o.connect(g).connect(bgmGain);
       o.start(); o.stop(ctx.currentTime + dur);
