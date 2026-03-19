@@ -7,11 +7,8 @@ const APP_VERSION = 'v1.2.0 (2026-03-19)';
 
 // ====== Pet Species Config ======
 const SPECIES = {
-  cat:    { name: '貓咪', icon: '🐱', stages: ['🥚','🐱','😺','😸','🦁'], stageLv: [1,3,10,25,50] },
-  dog:    { name: '狗狗', icon: '🐶', stages: ['🥚','🐶','🐕','🦮','🐺'], stageLv: [1,3,10,25,50] },
-  rabbit: { name: '兔兔', icon: '🐰', stages: ['🥚','miffy-head','miffy-orange','miffy-blue','miffy-yellow','miffy-pink','miffy-green','miffy-purple','miffy-rainbow'], stageLv: [1,3,10,25,50,75,100,150,200], css: true,
-    stageLabels: ['蛋蛋','小臉','橘衣米菲','藍衣米菲','黃衣米菲','粉衣米菲','綠衣米菲','紫衣米菲','彩虹米菲'] },
-  dragon: { name: '龍龍', icon: '🐲', stages: ['🥚','🐣','🐲','🐉','🔥'], stageLv: [1,3,10,25,50] },
+  rabbit: { name: '兔兔', icon: '🐰', stages: ['miffy-head','miffy-orange','miffy-blue','miffy-yellow','miffy-pink','miffy-green','miffy-purple','miffy-rainbow'], stageLv: [1,2,3,4,5,6,7,8], css: true,
+    stageLabels: ['小臉','橘衣米菲','藍衣米菲','黃衣米菲','粉衣米菲','綠衣米菲','紫衣米菲','彩虹米菲'] },
 };
 
 // Miffy-style CSS rabbit HTML for each stage
@@ -100,6 +97,7 @@ const DEFAULTS = {
   streak: 0,
   lastActiveDate: null,
   plan: null,          // { startDate, completedDays: ["2026-03-18",...] }
+  plansCompleted: 0,   // number of 7-day plans completed
 };
 
 function loadData() {
@@ -122,10 +120,8 @@ function $$(sel) { return document.querySelectorAll(sel); }
 
 // ====== Pet Calculations ======
 function petLevel(xp) {
-  for (let lv = XP_TABLE.length - 1; lv >= 1; lv--) {
-    if (xp >= XP_TABLE[lv]) return lv;
-  }
-  return 1;
+  // Level = 1 + number of completed 7-day plans
+  return 1 + (state.plansCompleted || 0);
 }
 
 function petStage(species, level) {
@@ -138,14 +134,15 @@ function petStage(species, level) {
 }
 
 function xpForNextLevel(level) {
-  return XP_TABLE[level + 1] || XP_TABLE[level] + 100;
+  // Next level = complete a 7-day plan
+  return 7;
 }
 
 function xpProgress(xp, level) {
-  const cur = XP_TABLE[level] || 0;
-  const next = xpForNextLevel(level);
-  if (next <= cur) return 0;
-  return Math.max(0, Math.min(100, Math.round(((xp - cur) / (next - cur)) * 100)));
+  // Progress = how many days completed in current plan (0-7)
+  if (!state.plan) return 0;
+  const days = state.plan.completedDays ? state.plan.completedDays.length : 0;
+  return Math.min(100, Math.round((days / 7) * 100));
 }
 
 // ====== Daily Decay ======
@@ -188,7 +185,7 @@ function renderOnboarding() {
 
   const picker = $('#species-picker');
   picker.innerHTML = '';
-  let selected = 'cat';
+  let selected = 'rabbit';
 
   Object.entries(SPECIES).forEach(([key, sp]) => {
     const btn = document.createElement('div');
@@ -246,7 +243,8 @@ function renderPetPage() {
   $('#bar-mood').style.width = p.mood + '%';
   $('#val-mood').textContent = p.mood;
   $('#bar-xp').style.width = xpProg + '%';
-  $('#val-xp').textContent = `${p.xp}/${xpForNextLevel(lv)}`;
+  const planDays = state.plan ? state.plan.completedDays.length : 0;
+  $('#val-xp').textContent = `${planDays}/7 天`;
 
   // Status icon
   const statusEl = $('#pet-status-icon');
@@ -338,10 +336,11 @@ function checkAndMarkPlanDay() {
 
       if (state.plan.completedDays.length >= 7) {
         // Big celebration for completing 7-day plan!
+        state.plansCompleted = (state.plansCompleted || 0) + 1;
         state.pet.xp += 100;
         state.pet.mood = 100;
         saveData();
-        setTimeout(() => showFeedAnimation('🏆', '7天計畫達成！+100 XP'), 500);
+        setTimeout(() => showFeedAnimation('🏆', `7天計畫達成！升級 Lv.${1 + state.plansCompleted}`), 500);
       }
     }
   }
@@ -395,6 +394,7 @@ function debugSimulateDay() {
 
   // Check 7-day reward
   if (state.plan.completedDays.length >= 7) {
+    state.plansCompleted = (state.plansCompleted || 0) + 1;
     state.pet.xp += 100;
     state.pet.mood = 100;
   }
