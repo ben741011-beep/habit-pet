@@ -124,19 +124,25 @@ html, body {
 
 /* Pet feed animation */
 .pet-feeding #pet-emoji { animation: petFeed .6s ease; }
+
+/* Companion rabbits */
+.pet-companion {
+  position: absolute;
+  z-index: 1;
+  transform: translateX(-50%) scale(0.35);
+  transform-origin: bottom center;
+  animation: companionBounce 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes companionBounce {
+  0%, 100% { transform: translateX(-50%) scale(0.35) translateY(0); }
+  50% { transform: translateX(-50%) scale(0.35) translateY(-5px); }
+}
 @keyframes petFeed {
   0% { transform: scale(1); }
   30% { transform: scale(1.25) rotate(-5deg); }
   60% { transform: scale(1.15) rotate(5deg); }
   100% { transform: scale(1); }
-}
-
-/* Pet hungry animation */
-.pet-hungry #pet-container { animation: petSad 3s ease-in-out infinite; }
-@keyframes petSad {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  25% { transform: translateY(-4px) rotate(-3deg); }
-  75% { transform: translateY(-4px) rotate(3deg); }
 }
 
 /* ===== Stats Bars ===== */
@@ -163,8 +169,6 @@ html, body {
   height: 100%; border-radius: 7px;
   transition: width .6s cubic-bezier(.25,.8,.25,1);
 }
-.stat-fill.fullness { background: linear-gradient(90deg, #FDCB6E, #F39C12); }
-.stat-fill.mood { background: linear-gradient(90deg, #FD79A8, #E84393); }
 .stat-fill.xp { background: linear-gradient(90deg, #6C5CE7, #A29BFE); }
 .stat-val { font-size: 13px; font-weight: 800; width: 32px; text-align: right; color: var(--text-light); }
 

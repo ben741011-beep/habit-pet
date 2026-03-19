@@ -3,7 +3,7 @@
    Data in localStorage · Offline-ready PWA
    =================================================================== */
 
-const APP_VERSION = 'v1.2.0 (2026-03-19)';
+const APP_VERSION = 'v1.3.0 (2026-03-19)';
 
 // ====== Pet Species Config ======
 const SPECIES = {
@@ -70,6 +70,36 @@ function renderMiffy(stage) {
 
 const HABIT_EMOJIS = ['💪','📖','🦷','🧹','🏃','💤','🥗','🧘','✏️','🎹','🚿','🌅','💊','🚶','🧠','🎯','💧','🍎','📵','🙏','🍼','pacifier'];
 
+// Companion rabbit positions: 中左右 左右 左右
+const COMPANION_POSITIONS = [
+  { left: '28%', bottom: '38px' },   // Lv.2: left close
+  { left: '68%', bottom: '38px' },   // Lv.3: right close
+  { left: '14%', bottom: '36px' },   // Lv.4: left medium
+  { left: '82%', bottom: '36px' },   // Lv.5: right medium
+  { left: '6%',  bottom: '34px' },   // Lv.6: left far
+  { left: '90%', bottom: '34px' },   // Lv.7: right far
+  { left: '43%', bottom: '40px' },   // Lv.8: center behind main
+];
+
+function renderCompanions(level) {
+  document.querySelectorAll('.pet-companion').forEach(el => el.remove());
+  if (level <= 1 || !state.pet) return;
+  const sp = SPECIES[state.pet.species];
+  if (!sp || !sp.css) return;
+  const scene = $('#pet-scene');
+  const n = Math.min(level - 1, COMPANION_POSITIONS.length);
+  for (let i = 0; i < n; i++) {
+    const pos = COMPANION_POSITIONS[i];
+    const el = document.createElement('div');
+    el.className = 'pet-companion';
+    el.innerHTML = renderMiffy(sp.stages[i]);
+    el.style.left = pos.left;
+    el.style.bottom = pos.bottom;
+    el.style.animationDelay = (i * 0.3) + 's';
+    scene.appendChild(el);
+  }
+}
+
 // Custom icon mapping (non-emoji icons)
 const CUSTOM_ICONS = {
   pacifier: { src: 'icons/pacifier.svg', label: '奶嘴' },
@@ -91,8 +121,8 @@ for (let i = 1; i <= 200; i++) XP_TABLE[i] = Math.floor(30 * i + 10 * Math.pow(i
 const STORE_KEY = 'habit-pet-data';
 
 const DEFAULTS = {
-  pet: null,           // { name, species, xp, fullness, mood, createdAt }
-  habits: [],          // [{ id, emoji, name, xpReward }]
+  pet: null,           // { name, species, xp, createdAt }
+  habits: [],          // [{ id, emoji, name }]
   dailyLog: {},        // { "2026-03-18": ["habit-id", ...] }
   streak: 0,
   lastActiveDate: null,
@@ -155,11 +185,6 @@ function processDayChange() {
     const diffDays = Math.round((now - last) / 86400000);
 
     // Decay per missed day
-    for (let i = 0; i < diffDays; i++) {
-      state.pet.fullness = Math.max(0, state.pet.fullness - 15);
-      state.pet.mood = Math.max(0, state.pet.mood - 10);
-    }
-
     // Check if yesterday had all habits done → streak
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -206,8 +231,6 @@ function renderOnboarding() {
       name,
       species: selected,
       xp: 0,
-      fullness: 80,
-      mood: 80,
       createdAt: todayStr(),
     };
     state.lastActiveDate = todayStr();
@@ -237,32 +260,17 @@ function renderPetPage() {
   $('#pet-name-display').textContent = p.name;
   $('#pet-level-badge').textContent = `Lv.${lv}`;
 
+  // Render companion rabbits
+  renderCompanions(lv);
+
   // Stats bars
-  $('#bar-fullness').style.width = p.fullness + '%';
-  $('#val-fullness').textContent = p.fullness;
-  $('#bar-mood').style.width = p.mood + '%';
-  $('#val-mood').textContent = p.mood;
   $('#bar-xp').style.width = xpProg + '%';
   const planDays = state.plan ? state.plan.completedDays.length : 0;
   $('#val-xp').textContent = `${planDays}/7 天`;
 
   // Status icon
   const statusEl = $('#pet-status-icon');
-  const scene = $('#pet-scene');
-  scene.classList.remove('pet-hungry');
-  if (p.fullness <= 20) {
-    statusEl.textContent = '😢';
-    statusEl.classList.remove('hidden');
-    scene.classList.add('pet-hungry');
-  } else if (p.fullness <= 40) {
-    statusEl.textContent = '😐';
-    statusEl.classList.remove('hidden');
-  } else if (p.mood >= 80 && p.fullness >= 60) {
-    statusEl.textContent = '💕';
-    statusEl.classList.remove('hidden');
-  } else {
-    statusEl.classList.add('hidden');
-  }
+  statusEl.classList.add('hidden');
 
   renderTodayHabits();
   render7DayPlan();
@@ -338,7 +346,6 @@ function checkAndMarkPlanDay() {
         // Big celebration for completing 7-day plan!
         state.plansCompleted = (state.plansCompleted || 0) + 1;
         state.pet.xp += 100;
-        state.pet.mood = 100;
         saveData();
         setTimeout(() => showFeedAnimation('🏆', `7天計畫達成！升級 Lv.${1 + state.plansCompleted}`), 500);
       }
@@ -380,11 +387,8 @@ function debugSimulateDay() {
   state.habits.forEach(h => {
     if (!state.dailyLog[targetDate].includes(h.id)) {
       state.dailyLog[targetDate].push(h.id);
-      state.pet.xp += h.xpReward;
     }
   });
-  state.pet.fullness = Math.min(100, state.pet.fullness + 20);
-  state.pet.mood = Math.min(100, state.pet.mood + 10);
   state.streak++;
 
   // Mark plan day
@@ -395,8 +399,6 @@ function debugSimulateDay() {
   // Check 7-day reward
   if (state.plan.completedDays.length >= 7) {
     state.plansCompleted = (state.plansCompleted || 0) + 1;
-    state.pet.xp += 100;
-    state.pet.mood = 100;
   }
 
   state.lastActiveDate = targetDate;
@@ -406,7 +408,7 @@ function debugSimulateDay() {
   setTimeout(() => {
     renderPetPage();
     if (state.plan.completedDays.length >= 7) {
-      setTimeout(() => showFeedAnimation('🏆', '7天計畫達成！+100 XP'), 800);
+      setTimeout(() => showFeedAnimation('🏆', '7天計畫達成！'), 800);
     }
   }, 300);
 }
@@ -446,7 +448,7 @@ function renderTodayHabits() {
       <div class="habit-check-emoji">${renderIcon(h.emoji, '28px')}</div>
       <div class="habit-check-info">
         <div class="habit-check-name">${esc(h.name)}</div>
-        <div class="habit-check-xp">+${h.xpReward} XP</div>
+        <div class="habit-check-xp">✅</div>
       </div>
     `;
     if (!isDone) {
@@ -467,20 +469,12 @@ function completeHabit(habit) {
   // Feed the pet
   const p = state.pet;
   const prevLv = petLevel(p.xp);
-  p.xp += habit.xpReward;
-  p.fullness = Math.min(100, p.fullness + Math.round(80 / Math.max(1, state.habits.length)));
-  p.mood = Math.min(100, p.mood + 5);
   const newLv = petLevel(p.xp);
-
-  // All habits done bonus
-  if (state.dailyLog[today].length === state.habits.length) {
-    p.mood = Math.min(100, p.mood + 15);
-  }
 
   saveData();
 
   // Animations
-  showFeedAnimation(habit.emoji, habit.xpReward);
+  showFeedAnimation(habit.emoji, '✅');
 
   // Level up?
   if (newLv > prevLv) {
@@ -548,7 +542,7 @@ function renderHabitsPage() {
       <div class="habit-card-emoji">${renderIcon(h.emoji, '36px')}</div>
       <div class="habit-card-info">
         <div class="habit-card-name">${esc(h.name)}</div>
-        <div class="habit-card-meta">每次 +${h.xpReward} XP</div>
+        <div class="habit-card-meta">${esc(h.name)}</div>
       </div>
       <div class="habit-card-actions">
         <button class="habit-card-btn edit" data-id="${h.id}">✏️</button>
@@ -600,10 +594,6 @@ function showHabitModal(existingHabit) {
       <label>習慣名稱</label>
       <input id="habit-name" type="text" placeholder="例：早起運動 30 分鐘" maxlength="20" value="${isEdit ? esc(existingHabit.name) : ''}">
     </div>
-    <div class="form-group">
-      <label>完成可獲得 XP</label>
-      <input id="habit-xp" type="number" value="${isEdit ? existingHabit.xpReward : 10}" min="1" max="100">
-    </div>
     <button class="btn-primary" id="habit-save">${isEdit ? '儲存' : '新增'}</button>
   `;
   openModal();
@@ -618,19 +608,16 @@ function showHabitModal(existingHabit) {
 
   $('#habit-save').addEventListener('click', () => {
     const name = $('#habit-name').value.trim();
-    const xp = parseInt($('#habit-xp').value) || 10;
     if (!name) return $('#habit-name').focus();
 
     if (isEdit) {
       existingHabit.emoji = selectedEmoji;
       existingHabit.name = name;
-      existingHabit.xpReward = Math.max(1, Math.min(100, xp));
     } else {
       state.habits.push({
         id: uid(),
         emoji: selectedEmoji,
         name,
-        xpReward: Math.max(1, Math.min(100, xp)),
       });
     }
     saveData();
